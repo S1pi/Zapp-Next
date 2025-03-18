@@ -6,6 +6,35 @@
 }
 
 @theme inline {
+  /* Colors */
+  --color-primary: #f9fcfa;
+  --color-secondary: #007f5f;
+  --color-black-zapp: #121212;
+
+  --color-aqua-gem: #1af3cf;
+  --color-seabed-green: #093331;
+  --color-night-sky-blue: #14213d;
+  --color-flame: #fb5607;
+  --color-sunshine: #ffb703;
+
+  --color-seperator-line: #a19f9f;
+
+  /* Fonts Sizes */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-mid: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-giga: 2.5rem;
+
+  --text-h1: 2.25rem;
+  --text-h2: 2rem;
+  --text-h3: 1.75rem;
+
+  /* Shadows */
+  --shadow-dataCard: "6px 10px 34px 1px rgba(0, 0, 0, 0.08)";
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -16,6 +45,24 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+  }
+}
+
+@layer base {
+  h1 {
+    @apply text-h1;
+  }
+
+  h2 {
+    @apply text-h2;
+  }
+
+  h3 {
+    @apply text-h3;
+  }
+
+  p {
+    @apply text-base;
   }
 }
 
