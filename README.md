@@ -10,6 +10,6 @@ The admin dashboard for the ZAPP application, located in the `src/app/admin/` di
 
 
 ## Running the Application
-## npm install 
-## cd zapp-next
-## npm run dev
+### npm install 
+### cd zapp-next
+### npm run dev
