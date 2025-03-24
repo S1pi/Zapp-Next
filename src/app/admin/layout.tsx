@@ -22,7 +22,6 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen flex flex-col bg-green-400">
-    
       {/* Main Content with Sidebar */}
       <div className="flex flex-1">
         {/* Sidebar */}
@@ -32,15 +31,15 @@ export default function AdminLayout({
             <ul className="space-y-2">
               {adminMenu.map((item) => (
                 <li key={item.href}>
-                <Link
-              href={item.href}
-              className={`flex items-center p-2 text-[#093331] hover:text-[#1AF3CF] hover:shadow-lg hover:shadow-[#1AF3CF] ${
-                pathname === item.href ? "text-[#093331]"  : ""
-              }`}
-            >
-              <span className="mr-3">{item.icon}</span>
-              {item.name}
-            </Link>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-2 text-[#093331] hover:text-[#1AF3CF] hover:shadow-lg hover:shadow-[#1AF3CF] ${
+                      pathname === item.href ? "text-[#093331]" : ""
+                    }`}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -61,9 +60,7 @@ export default function AdminLayout({
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6 bg-gray-100">
-          {children}
-        </main>
+        <main className="flex-1 p-6 bg-gray-100">{children}</main>
       </div>
     </div>
   );
