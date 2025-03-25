@@ -42,9 +42,9 @@ CREATE TABLE cars (
   license_plate VARCHAR(50) NOT NULL,
   seats INT NOT NULL,
   -- Check if the location_id is needed or if it can be removed, its tied to the parking_zones table
-  location_id INT, 
-  latitude DECIMAL(10, 8) NOT NULL,
-  longitude DECIMAL(11, 8) NOT NULL,
+  location_id INT DEFAULT NULL, 
+  latitude DECIMAL(10, 8) DEFAULT NULL,
+  longitude DECIMAL(11, 8) DEFAULT NULL,
   reserved BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (dealership_id) REFERENCES dealerships(id) ON DELETE CASCADE,
   FOREIGN KEY (location_id) REFERENCES parking_zones(id) ON DELETE SET NULL
