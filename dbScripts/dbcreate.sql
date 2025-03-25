@@ -29,8 +29,8 @@ CREATE TABLE dealerships (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  contact_id INT NOT NULL,
-  FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL,
+  contact_id INT DEFAULT NULL,
+  FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE cars (
