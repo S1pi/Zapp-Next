@@ -15,7 +15,7 @@ const getUserById = async (id: number): Promise<User> => {
 
 const createUser = async (userData: UserCreate): Promise<number> => {
   const sql =
-    "INSERT INTO users SET (email, firstname, lastname, password, phone_number, postnumber, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    "INSERT INTO users (email, firstname, lastname, password, phone_number, postnumber, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
   const values = [
     userData.email,
     userData.firstname,
