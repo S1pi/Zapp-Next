@@ -74,6 +74,8 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
       expiresIn: "12h",
     });
 
+    userWithoutPassword.validated = Boolean(userWithoutPassword.validated);
+
     return {
       message: "Login successful",
       token,
