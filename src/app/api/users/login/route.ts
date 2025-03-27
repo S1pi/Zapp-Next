@@ -1,4 +1,9 @@
-import { NotFoundError, UnauthorizedError } from "@/lib/customErrors";
+import isAuthenticated from "@/lib/auth";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
 import { userLogin } from "@/services/userService";
 import { LoginResponse } from "@/types/responses";
@@ -18,6 +23,9 @@ const UserSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    // To be implemented
+    // const userAuth = await isAuthenticated(req);
+
     const bodyText = await req.text();
 
     if (!bodyText) {
@@ -56,6 +64,10 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof UnauthorizedError) {
       return NextResponse.json({ error: err.message }, { status: 401 });
+    }
+
+    if (err instanceof ForbiddenError) {
+      return NextResponse.json({ error: err.message }, { status: 403 });
     }
 
     return NextResponse.json(
