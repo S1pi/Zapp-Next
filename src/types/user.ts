@@ -16,4 +16,6 @@ type UserWithoutPassword = Omit<User, "password">;
 
 type UserCreate = Omit<User, "id" | "created_at" | "validated" | "role">;
 
-export type { User, UserCreate, UserWithoutPassword };
+type TokenData = Pick<User, "id" | "validated" | "role">;
+
+export type { User, UserCreate, UserWithoutPassword, TokenData };

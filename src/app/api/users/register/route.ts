@@ -1,4 +1,5 @@
 import { DuplicateEntryError } from "@/lib/customErrors";
+import formattedErrors from "@/lib/formattedErrors";
 import { userRegister } from "@/services/userService";
 import { UserCreate, UserWithoutPassword } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
@@ -39,17 +40,6 @@ const UserSchema = z.object({
     }),
   address: z.string().trim().nonempty({ message: "Address is required" }),
 });
-
-// Helper function to format zod errors
-// Move this to a helper file in the future
-const formattedErrors = (errors: z.ZodIssue[]) => {
-  return errors.map((error) => {
-    return {
-      field: error.path.join("."),
-      message: error.message,
-    };
-  });
-};
 
 export async function POST(req: NextRequest) {
   try {

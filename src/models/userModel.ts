@@ -35,4 +35,19 @@ const createUser = async (userData: UserCreate): Promise<number> => {
   return result.insertId;
 };
 
-export { getUserById, createUser };
+const getUserByEmailOrPhone = async (emailOrPhone: string): Promise<User> => {
+  const query =
+    "SELECT * FROM users WHERE email = ? OR phone_number = ? LIMIT 1";
+  const [rows] = await dbConnection.query<RowDataPacket[] & User[]>(query, [
+    emailOrPhone,
+    emailOrPhone,
+  ]);
+
+  if (rows.length === 0) {
+    throw new Error("User not found");
+  }
+
+  return rows[0];
+};
+
+export { getUserById, createUser, getUserByEmailOrPhone };

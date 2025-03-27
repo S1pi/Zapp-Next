@@ -5,4 +5,10 @@ type CreatedUserSuccessResponse = {
   user: UserWithoutPassword;
 };
 
-export type { CreatedUserSuccessResponse };
+type LoginResponse = {
+  message: string;
+  token: string;
+  user: UserWithoutPassword;
+};
+
+export type { CreatedUserSuccessResponse, LoginResponse };

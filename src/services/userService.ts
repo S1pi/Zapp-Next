@@ -1,8 +1,17 @@
-import { DuplicateEntryError } from "@/lib/customErrors";
-import { getUserById, createUser } from "@/models/userModel";
+import {
+  DuplicateEntryError,
+  NotFoundError,
+  UnauthorizedError,
+} from "@/lib/customErrors";
+import {
+  getUserById,
+  createUser,
+  getUserByEmailOrPhone,
+} from "@/models/userModel";
 import { CreatedUserSuccessResponse } from "@/types/responses";
-import { UserCreate } from "@/types/user";
-import bcrypt from "bcrypt";
+import { TokenData, UserCreate } from "@/types/user";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const saltRounds = 10;
 
@@ -38,4 +47,49 @@ const userRegister = async (
   }
 };
 
-export { userRegister };
+const userLogin = async (emailOrPhone: string, pass: string) => {
+  try {
+    const user = await getUserByEmailOrPhone(emailOrPhone);
+
+    const passwordMatch = bcrypt.compareSync(pass, user.password);
+
+    if (!passwordMatch) {
+      console.log("Password does not match");
+      throw new UnauthorizedError("Credentials do not match");
+    }
+
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT secret is not defined");
+    }
+
+    const { password, ...userWithoutPassword } = user;
+
+    const tokenData: TokenData = {
+      id: user.id,
+      validated: user.validated,
+      role: user.role,
+    };
+
+    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
+      expiresIn: "12h",
+    });
+
+    return {
+      message: "Login successful",
+      token,
+      user: userWithoutPassword,
+    };
+  } catch (err) {
+    if ((err as Error).message.includes("not found")) {
+      throw new NotFoundError("User not found");
+    }
+
+    if (err instanceof UnauthorizedError) {
+      throw err;
+    }
+
+    throw Error("Internal server error: " + (err as Error).message);
+  }
+};
+
+export { userRegister, userLogin };
