@@ -1,11 +1,89 @@
 import React from "react";
 
 export default function Reservations() {
+  // Sample data for reservations
+  const reservations = [
+    {
+      startTime: "18.3.2025 klo 19:32",
+      endTime: "18.3.2025 klo 19:47",
+      user: "Jani-Petteri Lindqvist",
+      model: "Tesla Model Y",
+      license: "ZRO-681",
+      price: "10,50 €",
+    },
+    {
+      startTime: "18.3.2025 klo 19:32",
+      endTime: "18.3.2025 klo 19:47",
+      user: "Jani-Petteri Lindqvist",
+      model: "Tesla Model Y",
+      license: "ZRO-681",
+      price: "10,50 €",
+    },
+    {
+      startTime: "18.3.2025 klo 19:32",
+      endTime: "18.3.2025 klo 19:47",
+      user: "Jani-Petteri Lindqvist",
+      model: "Tesla Model Y",
+      license: "ZRO-681",
+      price: "10,50 €",
+    },
+    {
+      startTime: "18.3.2025 klo 19:32",
+      endTime: "18.3.2025 klo 19:47",
+      user: "Jani-Petteri Lindqvist",
+      model: "Tesla Model Y",
+      license: "ZRO-681",
+      price: "10,50 €",
+    },
+    {
+      startTime: "18.3.2025 klo 19:32",
+      endTime: "18.3.2025 klo 19:47",
+      user: "Jani-Petteri Lindqvist",
+      model: "Tesla Model Y",
+      license: "ZRO-681",
+      price: "10,50 €",
+    },
+  ];
+
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Reservations</h1>
-      <p>View and manage reservations (e.g., booking details).</p>
-      {/* Add a table of reservations */}
+      <h1 className="text-h2 text-[var(--color-seabed-green)] mb-2 mt-5">Reservations</h1>
+      <div className="flex justify-between items-center mt-10 p-4 border-t border-[var(--color-seabed-green)]">
+        <div className="flex space-x-2">
+          <button className="px-3 py-1  text-[var(--color-black-zapp)] rounded-full text-sm">
+            Kaikki <span className="ml-1 bg-white text-[var(--color-black-zapp)] rounded-full px-2">{reservations.length}</span>
+          </button>
+          <button className="px-3 py-1  text-[var(--color-black-zapp)] rounded-full text-sm">
+            Viim. 7 päivää <span className="ml-1 bg-white text-[var(--color-black-zapp)] rounded-full px-2">1</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Reservations Table */}
+      <div className="overflow-x-auto border-t border-[var(--color-seabed-green)]">
+        <table className="w-full text-left">
+          <tbody>
+            {reservations.map((reservation, index) => (
+              <tr key={index} className="border-b border-gray-200">
+                <td className="py-4 px-2">
+                  <span className="px-3 py-1 bg-[var(--color-aqua-gem)] text-[var(--color-black-zapp)] rounded-lg text-sm">
+                    {reservation.startTime}
+                  </span>
+                </td>
+                <td className="py-4 px-2">
+                  <span className="px-3 py-1 bg-red-500 text-[var(--color-black-zapp)] rounded-lg text-sm">
+                    {reservation.endTime}
+                  </span>
+                </td>
+                <td className="py-4 px-2 text-[var(--color-black-zapp)]">{reservation.user}</td>
+                <td className="py-4 px-2 text-[var(--color-black-zapp)]">{reservation.model}</td>
+                <td className="py-4 px-2 text-[var(--color-black-zapp)]">{reservation.license}</td>
+                <td className="py-4 px-2 text-[var(--color-black-zapp)]">{reservation.price}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

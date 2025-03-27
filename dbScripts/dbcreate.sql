@@ -1,3 +1,4 @@
+
 DROP DATABASE IF EXISTS zapp;
 
 CREATE DATABASE zapp DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -29,8 +30,8 @@ CREATE TABLE dealerships (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  contact_id INT NOT NULL,
-  FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL,
+  contact_id INT DEFAULT NULL,
+  FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE cars (
@@ -42,9 +43,9 @@ CREATE TABLE cars (
   license_plate VARCHAR(50) NOT NULL,
   seats INT NOT NULL,
   -- Check if the location_id is needed or if it can be removed, its tied to the parking_zones table
-  location_id INT, 
-  latitude DECIMAL(10, 8) NOT NULL,
-  longitude DECIMAL(11, 8) NOT NULL,
+  location_id INT DEFAULT NULL, 
+  latitude DECIMAL(10, 8) DEFAULT NULL,
+  longitude DECIMAL(11, 8) DEFAULT NULL,
   reserved BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (dealership_id) REFERENCES dealerships(id) ON DELETE CASCADE,
   FOREIGN KEY (location_id) REFERENCES parking_zones(id) ON DELETE SET NULL
