@@ -1,4 +1,3 @@
-import isAuthenticated from "@/lib/auth";
 import {
   ForbiddenError,
   NotFoundError,
@@ -23,9 +22,6 @@ const UserSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // To be implemented
-    // const userAuth = await isAuthenticated(req);
-
     const bodyText = await req.text();
 
     if (!bodyText) {
@@ -57,6 +53,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(loginResponse, { status: 200 });
   } catch (err) {
+    console.log("Error in login route", err);
     if (err instanceof NotFoundError) {
       // Check if this should return 401 instead of 404 if user is not found for security reasons
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -68,6 +65,13 @@ export async function POST(req: NextRequest) {
 
     if (err instanceof ForbiddenError) {
       return NextResponse.json({ error: err.message }, { status: 403 });
+    }
+
+    if (err instanceof SyntaxError) {
+      return NextResponse.json(
+        { error: "Invalid JSON format" },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json(

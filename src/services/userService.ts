@@ -11,9 +11,28 @@ import {
 import { CreatedUserSuccessResponse } from "@/types/responses";
 import { TokenData, UserCreate } from "@/types/user";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
+// import jwt from "jsonwebtoken";
 
 const saltRounds = 10;
+
+const createJWT = async (tokenData: TokenData): Promise<string> => {
+  const jwtSecret = process.env.JWT_SECRET;
+
+  if (!jwtSecret) {
+    throw new Error("JWT secret is not defined");
+  }
+
+  const secret = new TextEncoder().encode(jwtSecret);
+
+  const token = await new SignJWT(tokenData)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("12h")
+    .sign(secret);
+
+  return token;
+};
 
 const userRegister = async (
   userData: UserCreate
@@ -58,11 +77,9 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
       throw new UnauthorizedError("Credentials do not match");
     }
 
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT secret is not defined");
-    }
-
     const { password, ...userWithoutPassword } = user;
+
+    user.validated = Boolean(user.validated);
 
     const tokenData: TokenData = {
       id: user.id,
@@ -70,11 +87,7 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
       role: user.role,
     };
 
-    const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
-      expiresIn: "12h",
-    });
-
-    userWithoutPassword.validated = Boolean(userWithoutPassword.validated);
+    const token = await createJWT(tokenData);
 
     return {
       message: "Login successful",
@@ -82,6 +95,8 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
       user: userWithoutPassword,
     };
   } catch (err) {
+    console.log("Error logging in", err);
+
     if ((err as Error).message.includes("not found")) {
       throw new NotFoundError("User not found");
     }

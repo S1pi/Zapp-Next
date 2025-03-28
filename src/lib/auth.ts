@@ -1,39 +1,45 @@
-import { NextRequest, NextResponse } from "next/server";
-import { ForbiddenError, UnauthorizedError } from "./customErrors";
-import jwt from "jsonwebtoken";
-import { TokenData, User } from "@/types/user";
-import { getUserById } from "@/models/userModel";
+// REST IN PEACE
+// This formerly contained the authentication logic for the application, but it has been
+// replaced with a more efficient and secure solution using nextjs middleware and cookies.
+// The new solution is more robust and easier to maintain, and it provides better security for user authentication.
+// The code below is kept for reference and historical purposes only. It is not used in the current application.
 
-const isAuthenticated = async (req: NextRequest) => {
-  try {
-    const authToken = req.headers.get("Authorization")?.split(" ")[1];
+// import { NextRequest, NextResponse } from "next/server";
+// import { ForbiddenError, UnauthorizedError } from "./customErrors";
+// import jwt from "jsonwebtoken";
+// import { TokenData, User } from "@/types/user";
+// import { getUserById } from "@/models/userModel";
 
-    if (!authToken) {
-      throw new UnauthorizedError("Authorization token is required");
-    }
+// const isAuthenticated = async (req: NextRequest) => {
+//   try {
+//     const authToken = req.headers.get("Authorization")?.split(" ")[1];
 
-    if (!process.env.JWT_SECRET) {
-      throw new Error("JWT_SECRET is not defined");
-    }
+//     if (!authToken) {
+//       throw new UnauthorizedError("Authorization token is required");
+//     }
 
-    const decoded = jwt.verify(authToken, process.env.JWT_SECRET) as TokenData;
+//     if (!process.env.JWT_SECRET) {
+//       throw new Error("JWT_SECRET is not defined");
+//     }
 
-    const user = await getUserById(decoded.id);
+//     const decoded = jwt.verify(authToken, process.env.JWT_SECRET) as TokenData;
 
-    if (!user) {
-      throw new ForbiddenError("Token is not valid");
-    }
+//     const user = await getUserById(decoded.id);
 
-    const { password, ...userWithoutPassword } = user;
+//     if (!user) {
+//       throw new ForbiddenError("Token is not valid");
+//     }
 
-    return userWithoutPassword;
-  } catch (err) {
-    if (err instanceof jwt.JsonWebTokenError) {
-      throw new ForbiddenError("Token is not valid");
-    }
+//     const { password, ...userWithoutPassword } = user;
 
-    throw err;
-  }
-};
+//     return userWithoutPassword;
+//   } catch (err) {
+//     if (err instanceof jwt.JsonWebTokenError) {
+//       throw new ForbiddenError("Token is not valid");
+//     }
 
-export default isAuthenticated;
+//     throw err;
+//   }
+// };
+
+// export default isAuthenticated;
