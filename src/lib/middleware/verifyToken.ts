@@ -39,10 +39,25 @@ export async function verifyToken(
       );
     }
 
-    const res = NextResponse.next();
-    res.headers.set("X-User-Id", String(id));
-    res.headers.set("X-User-Role", role);
-    return res;
+    // Old version of forwarding user data to the next middleware or route handler
+    // Problem with this approach is that it puts the headers in the response instead of the request
+    // const res = NextResponse.next();
+    // res.headers.set("X-User-Id", String(id));
+    // res.headers.set("X-User-Role", role);
+    // return res;
+
+    // New version of adding headers
+    // This approach is better because it forwards the headers as part of the request to the next middleware or route handler
+    // and not as part of the response. This way, the next middleware or route handler can access the headers directly from the request object.
+
+    const newHeaders = new Headers(req.headers);
+    newHeaders.set("X-User-Id", String(id));
+    newHeaders.set("X-User-Role", role);
+    return NextResponse.next({
+      request: {
+        headers: newHeaders,
+      },
+    });
   } catch (err) {
     console.error("Error decoding token", err);
 
