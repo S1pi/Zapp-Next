@@ -53,6 +53,7 @@ export async function verifyToken(
     const newHeaders = new Headers(req.headers);
     newHeaders.set("X-User-Id", String(id));
     newHeaders.set("X-User-Role", role);
+
     return NextResponse.next({
       request: {
         headers: newHeaders,

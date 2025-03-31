@@ -4,7 +4,7 @@ import {
   UnauthorizedError,
 } from "@/lib/customErrors";
 import {
-  getUserById,
+  getUserById as getUserByIdFromModel,
   createUser,
   getUserByEmailOrPhone,
 } from "@/models/userModel";
@@ -41,7 +41,7 @@ const userRegister = async (
     userData.password = await bcrypt.hash(userData.password, saltRounds);
 
     const createdUserId = await createUser(userData);
-    const createdUser = await getUserById(createdUserId);
+    const createdUser = await getUserByIdFromModel(createdUserId);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = createdUser;
@@ -109,4 +109,27 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
   }
 };
 
-export { userRegister, userLogin };
+const getUserById = async (id: number) => {
+  try {
+    const user = await getUserByIdFromModel(id);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    const { password, ...userWithoutPassword } = user;
+    user.validated = Boolean(user.validated);
+
+    return userWithoutPassword;
+  } catch (err) {
+    console.log("Error getting user by ID", err);
+
+    if ((err as Error).message.includes("not found")) {
+      throw new NotFoundError("User not found");
+    }
+
+    throw Error("Internal server error: " + (err as Error).message);
+  }
+};
+
+export { userRegister, userLogin, getUserById };

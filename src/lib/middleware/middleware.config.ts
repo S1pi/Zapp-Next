@@ -5,7 +5,7 @@ type MiddlewareMap = Record<string, MiddlewareFunc[]>;
 
 const middlewareConfig: MiddlewareMap = {
   // "/api/admin": [],
-  "/api/users/login": [verifyToken],
+  "/api/users/getbytoken": [verifyToken],
   "/api/public": [],
 };
 export default middlewareConfig;
