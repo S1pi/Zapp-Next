@@ -25,6 +25,8 @@ const createJWT = async (tokenData: TokenData): Promise<string> => {
 
   const secret = new TextEncoder().encode(jwtSecret);
 
+  console.log(secret)
+
   const token = await new SignJWT(tokenData)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -77,6 +79,7 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
       throw new UnauthorizedError("Credentials do not match");
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
     user.validated = Boolean(user.validated);
