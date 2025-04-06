@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 // Sidebar menu items
 const adminMenu = [
-  { name: "Live Dashboard", href: "/admin/live-dashboard", icon: "🏠" },
+  { name: "Live Dashboard", href: "/admin/dashboard", icon: "🏠" },
   // { name: "ZAPP-fleet", href: "/admin/zapp-fleet", icon: "⚡" },
   { name: "Cars", href: "/admin/cars", icon: "🚗" },
   { name: "Users", href: "/admin/users", icon: "👥" },
@@ -35,15 +35,17 @@ export default function AdminLayout({
             <ul className="space-y-2">
               {adminMenu.map((item) => (
                 <li key={item.href}>
-                 <Link
-                href={item.href}
-                className={`flex items-center p-2 text-[var(--color-seabed-green)] hover:text-[var(--color-aqua-gem)] hover:shadow-lg ${
-                  pathname === item.href ? "text-[var(--color-seabed-green)]" : "text-[var(--color-black-zapp)]"
-                }`}
-              >
-                <span className="mr-3">{item.icon}</span>
-                {item.name}
-              </Link>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-2 text-[var(--color-seabed-green)] hover:text-[var(--color-aqua-gem)] hover:shadow-lg ${
+                      pathname === item.href
+                        ? "text-[var(--color-seabed-green)]"
+                        : "text-[var(--color-black-zapp)]"
+                    }`}
+                  >
+                    <span className="mr-3">{item.icon}</span>
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
