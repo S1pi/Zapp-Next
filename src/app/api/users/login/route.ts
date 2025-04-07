@@ -21,8 +21,10 @@ const UserSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  console.log("Request method:", req.method);
   try {
     const bodyText = await req.text();
+    console.log("Request body:", bodyText);
 
     if (!bodyText) {
       return NextResponse.json(
@@ -31,6 +33,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    console.log("Parsed body:", JSON.parse(bodyText));
     const user = UserSchema.safeParse(JSON.parse(bodyText));
 
     if (!user.success) {
@@ -56,15 +59,24 @@ export async function POST(req: NextRequest) {
     console.log("Error in login route", err);
     if (err instanceof NotFoundError) {
       // Check if this should return 401 instead of 404 if user is not found for security reasons
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: err.statusCode }
+      );
     }
 
     if (err instanceof UnauthorizedError) {
-      return NextResponse.json({ error: err.message }, { status: 401 });
+      return NextResponse.json(
+        { error: err.message },
+        { status: err.statusCode }
+      );
     }
 
     if (err instanceof ForbiddenError) {
-      return NextResponse.json({ error: err.message }, { status: 403 });
+      return NextResponse.json(
+        { error: err.message },
+        { status: err.statusCode }
+      );
     }
 
     if (err instanceof SyntaxError) {

@@ -25,7 +25,7 @@ const createJWT = async (tokenData: TokenData): Promise<string> => {
 
   const secret = new TextEncoder().encode(jwtSecret);
 
-  console.log(secret)
+  console.log(secret);
 
   const token = await new SignJWT(tokenData)
     .setProtectedHeader({ alg: "HS256" })
@@ -58,12 +58,11 @@ const userRegister = async (
   } catch (err) {
     if ((err as any).code === "ER_DUP_ENTRY") {
       if ((err as any).message.includes("email")) {
-        throw new DuplicateEntryError("Email already exists");
+        throw new DuplicateEntryError("Email already in use");
       } else if ((err as any).message.includes("phone_number")) {
-        throw new DuplicateEntryError("Phone number already exists");
+        throw new DuplicateEntryError("Phone number already in use");
       }
     }
-
     throw Error("User registration failed: " + (err as Error).message);
   }
 };

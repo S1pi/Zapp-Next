@@ -2,7 +2,7 @@ import dbConnection from "@/lib/db";
 import { Dealership, DealershipCreate } from "@/types/dealership";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-const createDealership = async (
+const insertDealership = async (
   dealershipData: DealershipCreate
 ): Promise<number> => {
   const sql =
@@ -37,4 +37,4 @@ const getDealershipById = async (id: number): Promise<Dealership> => {
   return rows[0];
 };
 
-export { createDealership, getDealershipById };
+export { insertDealership, getDealershipById };
