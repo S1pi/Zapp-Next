@@ -18,6 +18,8 @@
   --color-sunshine: #ffb703;
 
   --color-seperator-line: #a19f9f;
+  --color-card-background: #f6f6f6;
+  --color-card-stroke: #d6d6d6;
 
   /* Fonts Sizes */
   --text-xs: 0.75rem;
@@ -33,7 +35,7 @@
   --text-h3: 1.75rem;
 
   /* Shadows */
-  --shadow-dataCard: "6px 10px 34px 1px rgba(0, 0, 0, 0.08)";
+  --shadow-dataCard: 6px 10px 34px 1px rgba(0, 0, 0, 0.08);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
