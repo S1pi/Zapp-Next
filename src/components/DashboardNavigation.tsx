@@ -19,9 +19,9 @@ const adminMenu = [
 
 // Define the navigation items for the dealer dashboard
 const dealerMenu = [
-  { name: "Live Dashboard", href: "/live-dashboard", icon: <span>🏠</span> },
-  { name: "Cars", href: "/cars", icon: <span>🚗</span> },
-  { name: "Reservations", href: "/reservations", icon: <span>📋</span> },
+  { name: "Live Dashboard", href: "/live-dashboard", icon: <FaHouse /> },
+  { name: "Cars", href: "/cars", icon: <FaCar /> },
+  { name: "Reservations", href: "/reservations", icon: <FaListUl /> },
 ];
 
 export function DashboardNavigation({ user }: DashboardNavigationProps) {

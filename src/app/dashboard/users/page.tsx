@@ -84,10 +84,10 @@ export default function Users() {
           <tbody>
             {users.map((user, index) => (
               <tr key={index} className="border-b border-secondary">
-                <td className="py-4 px-2 text-black-zapp">{user.name}</td>
-                <td className="py-4 px-2 text-black-zapp">{user.phone}</td>
-                <td className="py-4 px-2 text-black-zapp">{user.email}</td>
-                <td className="py-4 px-2 text-black-zapp">{user.registered}</td>
+                <td className="py-6 px-2 text-black-zapp">{user.name}</td>
+                <td className="py-6 px-2 text-black-zapp">{user.phone}</td>
+                <td className="py-6 px-2 text-black-zapp">{user.email}</td>
+                <td className="py-6 px-2 text-black-zapp">{user.registered}</td>
               </tr>
             ))}
           </tbody>
