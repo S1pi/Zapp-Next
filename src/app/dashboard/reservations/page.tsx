@@ -66,11 +66,11 @@ export default function Reservations() {
       </div>
 
       {/* Reservations Table */}
-      <div className="overflow-x-auto border-t border-seperator-line">
+      <div className="overflow-x-auto border-t border-seperator-line pt-10">
         <table className="w-full text-left">
           <tbody>
             {reservations.map((reservation, index) => (
-              <tr key={index} className="border-b border-gray-200">
+              <tr key={index} className="border-b border-secondary">
                 <td className="py-4 px-2">
                   <span className="px-3 py-1 bg-aqua-gem text-black-zapp rounded-lg text-sm">
                     {reservation.startTime}

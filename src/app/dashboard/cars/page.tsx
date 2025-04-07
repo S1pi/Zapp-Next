@@ -74,7 +74,7 @@ export default function Cars() {
       </div>
 
       {/* Cars Table */}
-      <div className="overflow-x-auto border-t border-seabed-green">
+      <div className="overflow-x-auto border-t border-seperator-line">
         <table className="w-full text-left">
           <tbody>
             {cars.map((car, index) => (

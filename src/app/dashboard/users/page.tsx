@@ -79,11 +79,11 @@ export default function Users() {
       </div>
 
       {/* Users Table */}
-      <div className="overflow-x-auto border-t border-seabed-green">
+      <div className="overflow-x-auto border-t border-seperator-line">
         <table className="w-full text-left">
           <tbody>
             {users.map((user, index) => (
-              <tr key={index} className="border-b border-gray-200">
+              <tr key={index} className="border-b border-secondary">
                 <td className="py-4 px-2 text-black-zapp">{user.name}</td>
                 <td className="py-4 px-2 text-black-zapp">{user.phone}</td>
                 <td className="py-4 px-2 text-black-zapp">{user.email}</td>
