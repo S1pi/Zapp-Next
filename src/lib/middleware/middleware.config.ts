@@ -1,14 +1,13 @@
-import { verify } from "crypto";
 import { MiddlewareFunc } from "./middlewareRunner";
+import { verifyDealership } from "./verifyDealership";
 import { verifyToken } from "./verifyToken";
 
 type MiddlewareMap = Record<string, MiddlewareFunc[]>;
 
 const middlewareConfig: MiddlewareMap = {
-  // "/api/admin": [],
-  "/api/users/getbytoken": [verifyToken],
   "/api/public": [],
-  "/api/dealership/create": [verifyToken],
-  "/api/dealership/byid/": [verifyToken],
+  "/api/users/getbytoken": [verifyToken],
+  "/api/dealership": [verifyToken],
+  "/api/cars": [verifyToken],
 };
 export default middlewareConfig;

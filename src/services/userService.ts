@@ -12,7 +12,6 @@ import { CreatedUserSuccessResponse } from "@/types/responses";
 import { TokenData, UserCreate } from "@/types/user";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
-// import jwt from "jsonwebtoken";
 
 const saltRounds = 10;
 

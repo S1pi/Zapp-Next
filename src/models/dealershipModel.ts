@@ -37,4 +37,18 @@ const getDealershipById = async (id: number): Promise<Dealership> => {
   return rows[0];
 };
 
-export { insertDealership, getDealershipById };
+const getDealershipByContactId = async (contactId: number): Promise<number> => {
+  const query = "SELECT id FROM dealerships WHERE contact_id = ?";
+  const [rows] = await dbConnection.query<RowDataPacket[]>(query, [contactId]);
+
+  if (rows.length === 0) {
+    throw new Error("Dealership not found for this contact ID");
+  }
+
+  console.log("Rows in getDealershipByContactId:", rows);
+  console.log("Dealership ID:", rows[0].id);
+
+  return rows[0].id;
+};
+
+export { insertDealership, getDealershipById, getDealershipByContactId };

@@ -1,5 +1,9 @@
 import { DuplicateEntryError } from "@/lib/customErrors";
-import { insertDealership, getDealershipById } from "@/models/dealershipModel";
+import {
+  insertDealership,
+  getDealershipById,
+  getDealershipByContactId,
+} from "@/models/dealershipModel";
 import { DealershipCreate } from "@/types/dealership";
 
 const createDealership = async (dealershipData: DealershipCreate) => {
@@ -19,4 +23,14 @@ const createDealership = async (dealershipData: DealershipCreate) => {
   }
 };
 
-export { createDealership };
+const getDealershipIdByUser = async (userId: number) => {
+  try {
+    const dealership = await getDealershipByContactId(userId);
+    return dealership;
+  } catch (err) {
+    console.log("Error in getDealershipIdByUser:", err);
+    throw new Error("Dealership not found");
+  }
+};
+
+export { createDealership, getDealershipIdByUser };

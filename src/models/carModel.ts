@@ -1,10 +1,10 @@
+import { NotFoundError } from "@/lib/customErrors";
 import dbConnection from "@/lib/db";
 import { AddCarData, Car } from "@/types/cars";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const insertCar = async (carInfo: AddCarData): Promise<number> => {
-  const sql = `INSET INTO cars (dealership_id, brand, model, year, license_plate, seats)
-      VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO cars (dealership_id, brand, model, year, license_plate, seats) VALUES (?, ?, ?, ?, ?, ?)`;
 
   const params = [
     carInfo.dealership_id,
@@ -15,7 +15,7 @@ const insertCar = async (carInfo: AddCarData): Promise<number> => {
     carInfo.seats,
   ];
 
-  const [result] = await dbConnection.query<ResultSetHeader>(sql, params);
+  const [result] = await dbConnection.execute<ResultSetHeader>(sql, params);
 
   const { affectedRows, insertId } = result;
 
@@ -39,4 +39,29 @@ const selectCarById = async (carId: number): Promise<Car> => {
   return rows[0];
 };
 
-export { insertCar, selectCarById };
+const selectAllCars = async (): Promise<Car[]> => {
+  const sql = `SELECT * FROM cars`;
+
+  const [rows] = await dbConnection.query<RowDataPacket[] & Car[]>(sql);
+
+  if (rows.length === 0) {
+    throw new Error("No cars found");
+  }
+
+  return rows;
+};
+
+const selectCarsByDealershipId = async (dsId: number): Promise<Car[]> => {
+  const sql = `SELECT * FROM cars WHERE dealership_id = ?`;
+  const params = [dsId];
+
+  const [rows] = await dbConnection.query<RowDataPacket[] & Car[]>(sql, params);
+
+  if (rows.length === 0) {
+    throw new NotFoundError("No cars found for this dealership");
+  }
+
+  return rows;
+};
+
+export { insertCar, selectCarById, selectAllCars, selectCarsByDealershipId };
