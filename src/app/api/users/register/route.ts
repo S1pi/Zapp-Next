@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(createdUser, { status: 201 });
   } catch (err) {
     if (err instanceof DuplicateEntryError) {
-      return new NextResponse(err.message, { status: err.statusCode });
+      return NextResponse.json({message: err.message}, { status: err.statusCode });
     }
 
     return new NextResponse(`Error: ${(err as Error).message}`, {

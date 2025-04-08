@@ -11,7 +11,16 @@ const DealershipSchema = z.object({
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("X-User-Id");
-  // const userRole = req.headers.get("X-User-Role");
+  const userRole = req.headers.get("X-User-Role");
+
+
+  if (userRole !== "admin" && userRole !== "dealer") {
+    return NextResponse.json(
+      { error: "Unauthorized", message: "Only Admins and Dealers can create Dealerships" },
+      { status: 403 }
+    );
+  }
+
   try {
     const bodyText = await req.text();
 

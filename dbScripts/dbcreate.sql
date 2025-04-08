@@ -8,7 +8,8 @@ CREATE TABLE parking_zones (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   description TEXT,
-  location GEOMETRY NOT NULL SRID 4326
+  -- location GEOMETRY NOT NULL SRID 4326 -- All geometries are in WGS 84
+  location MULTIPOINT NOT NULL SRID 4326 -- Assuming the location is a multipoint
 );
 
 CREATE TABLE users (
