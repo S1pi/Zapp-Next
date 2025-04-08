@@ -38,10 +38,10 @@ export function DashboardNavigation({ user }: DashboardNavigationProps) {
             <li key={item.href}>
               <Link
                 href={"/dashboard" + item.href}
-                className={`flex items-center p-2 hover:text-aqua-gem hover:shadow-lg
+                className={`flex items-center p-2 hover:text-aqua-gem transition-all duration-200 ease-in-out
                   ${
                     pathname === "/dashboard" + item.href
-                      ? "text-aqua-gem"
+                      ? "text-aqua-gem text-lg"
                       : "text-black-zapp"
                   }`}
               >
@@ -56,10 +56,10 @@ export function DashboardNavigation({ user }: DashboardNavigationProps) {
             <li key={item.href}>
               <Link
                 href={"/dashboard" + item.href}
-                className={`flex items-center p-2 hover:text-aqua-gem hover:shadow-lg
+                className={`flex items-center p-2 hover:text-aqua-gem transition-all duration-200 ease-in-out
                   ${
                     pathname === "/dashboard" + item.href
-                      ? "text-aqua-gem"
+                      ? "text-aqua-gem text-lg"
                       : "text-black-zapp"
                   }`}
               >
