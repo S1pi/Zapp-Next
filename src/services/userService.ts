@@ -7,6 +7,7 @@ import {
   getUserById as getUserByIdFromModel,
   createUser,
   getUserByEmailOrPhone,
+  updateUserRole,
 } from "@/models/userModel";
 import { CreatedUserSuccessResponse } from "@/types/responses";
 import { TokenData, UserCreate } from "@/types/user";
@@ -133,4 +134,27 @@ const getUserById = async (id: number) => {
   }
 };
 
-export { userRegister, userLogin, getUserById };
+const modifyUserRole = async (userId: number, newRole: string) => {
+  try {
+    const message = await updateUserRole(userId, newRole);
+    const user = await getUserById(userId);
+    const { id, role, firstname, lastname } = user;
+    return {
+      message,
+      user: {
+        id,
+        role,
+        firstname,
+        lastname,
+      },
+    };
+  } catch (err) {
+    console.log("Error updating user role", err);
+    if (err instanceof NotFoundError) {
+      throw new NotFoundError(err.message);
+    }
+    throw new Error("Internal server error: " + (err as Error).message);
+  }
+};
+
+export { userRegister, userLogin, getUserById, modifyUserRole };
