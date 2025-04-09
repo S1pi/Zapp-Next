@@ -9,5 +9,6 @@ const middlewareConfig: MiddlewareMap = {
   "/api/users/getbytoken": [verifyToken],
   "/api/dealership": [verifyToken],
   "/api/cars": [verifyToken],
+  "/api/users/modify": [verifyToken],
 };
 export default middlewareConfig;
