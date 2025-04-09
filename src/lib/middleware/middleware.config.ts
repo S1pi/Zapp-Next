@@ -1,5 +1,4 @@
 import { MiddlewareFunc } from "./middlewareRunner";
-import { verifyDealership } from "./verifyDealership";
 import { verifyToken } from "./verifyToken";
 
 type MiddlewareMap = Record<string, MiddlewareFunc[]>;
