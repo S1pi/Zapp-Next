@@ -142,6 +142,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (err instanceof TypeError) {
+      if (err.message.includes('"multipart/form-data"')) {
+        return NextResponse.json(
+          { error: "Invalid Content-Type", message: err.message },
+          { status: 400 }
+        );
+      }
+    }
+
     return new NextResponse(`Error: ${(err as Error).message}`, {
       status: 500,
     });
