@@ -4,6 +4,7 @@ import {
   UnauthorizedError,
 } from "@/lib/customErrors";
 import { saveFile } from "@/lib/saveFile";
+import { insertDriverLicenseData } from "@/models/licenseModel";
 import {
   getUserById as getUserByIdFromModel,
   createUser,
@@ -58,19 +59,41 @@ const userRegister = async (
       fileUsage: "license_back",
     });
 
-    console.log("frontSaveFile", frontSaveFile);
-    console.log("backSaveFile", backSaveFile);
+    if (!frontSaveFile.fileUrl || !backSaveFile.fileUrl) {
+      throw new Error("License url could not be created");
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = createdUser;
 
     // Convert validated to boolean
     userWithoutPassword.validated = Boolean(userWithoutPassword.validated);
 
+    const driverLicenseUrlData = {
+      front_license_url: frontSaveFile.fileUrl,
+      back_license_url: backSaveFile.fileUrl,
+    };
+
+    // Save driver license data to the database
+    const driverLicenseId = await insertDriverLicenseData(createdUser.id, {
+      ...driverLicenseUrlData,
+    });
+
+    if (!driverLicenseId) {
+      throw new Error("Driver license data could not be inserted");
+    }
+
+    console.log(
+      "Driver license data inserted successfully with ID:",
+      driverLicenseId
+    );
+
     return {
       message: "User created successfully",
       user: userWithoutPassword,
     };
   } catch (err) {
+    console.log("Error creating user", err);
     if ((err as any).code === "ER_DUP_ENTRY") {
       if ((err as any).message.includes("email")) {
         throw new DuplicateEntryError("Email already in use");
