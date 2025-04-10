@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# uploadfiles
+/public/uploads/*
+/secure_uploads/licenses/*
+/secure_uploads/dropoff/*

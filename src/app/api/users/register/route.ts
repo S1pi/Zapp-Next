@@ -41,36 +41,105 @@ const UserSchema = z.object({
   address: z.string().trim().nonempty({ message: "Address is required" }),
 });
 
+const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+const fileSizeLimit = 2 * 1024 * 1024; // 2MB
+
+const FileSchema = z
+  .instanceof(File)
+  .refine((file) => file.size <= fileSizeLimit, {
+    message: `File size must be less than ${fileSizeLimit / 1024 / 1024} MB`,
+  })
+  .refine((file) => validTypes.includes(file.type), {
+    message: `File type must be one of the following: ${validTypes.join(", ")}`,
+  })
+  .refine(
+    (file) => {
+      const fileName = file.name.toLowerCase();
+      return (
+        fileName.endsWith(".jpg") ||
+        fileName.endsWith(".jpeg") ||
+        fileName.endsWith(".png")
+      );
+    },
+    {
+      message: `File name must end with .jpg, .jpeg, or .png`,
+    }
+  );
+
 export async function POST(req: NextRequest) {
   try {
-    // Check if request body is empty
-    const bodyText = await req.text();
+    const formData = await req.formData();
 
-    if (!bodyText) {
+    const licenseFront = formData.get("license_front");
+    const licenseBack = formData.get("license_back");
+    const bodyData = formData.get("data");
+
+    if (!licenseFront || !licenseBack) {
+      return NextResponse.json(
+        { error: "Both front and back images of drivinglicenses are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!bodyData || typeof bodyData !== "string") {
       return NextResponse.json(
         { error: "Request body is required" },
         { status: 400 }
       );
     }
 
-    // Parse request body to JSON if it's not empty
-    const userInfo = JSON.parse(bodyText);
+    console.log("licenseFront", licenseFront instanceof File);
+    console.log("licenseBack", licenseBack instanceof File);
 
-    const user = UserSchema.safeParse(userInfo);
+    const parsedBodyData = JSON.parse(bodyData);
+    const user = UserSchema.safeParse(parsedBodyData);
+    const parsedLicenseFront = FileSchema.safeParse(licenseFront);
+    const parsedLicenseBack = FileSchema.safeParse(licenseBack);
 
-    if (!user.success) {
+    if (!parsedLicenseFront.success) {
       return NextResponse.json(
-        { errors: formattedErrors(user.error.issues) },
+        {
+          errors: formattedErrors(parsedLicenseFront.error.issues),
+          message: "invalid data from license front",
+        },
         { status: 400 }
       );
     }
 
-    const createdUser = await userRegister(user.data);
+    if (!parsedLicenseBack.success) {
+      return NextResponse.json(
+        {
+          errors: formattedErrors(parsedLicenseBack.error.issues),
+          message: "invalid data from license back",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!user.success) {
+      return NextResponse.json(
+        {
+          errors: formattedErrors(user.error.issues),
+          message: "invalid data from user",
+        },
+        { status: 400 }
+      );
+    }
+
+    const createdUser = await userRegister(
+      user.data,
+      parsedLicenseFront.data,
+      parsedLicenseBack.data
+    );
 
     return NextResponse.json(createdUser, { status: 201 });
+    // return NextResponse.json({ message: "Testing works" }, { status: 201 });
   } catch (err) {
     if (err instanceof DuplicateEntryError) {
-      return NextResponse.json({message: err.message}, { status: err.statusCode });
+      return NextResponse.json(
+        { message: err.message },
+        { status: err.statusCode }
+      );
     }
 
     return new NextResponse(`Error: ${(err as Error).message}`, {

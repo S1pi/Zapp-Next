@@ -3,6 +3,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "@/lib/customErrors";
+import { saveFile } from "@/lib/saveFile";
 import {
   getUserById as getUserByIdFromModel,
   createUser,
@@ -37,7 +38,9 @@ const createJWT = async (tokenData: TokenData): Promise<string> => {
 };
 
 const userRegister = async (
-  userData: UserCreate
+  userData: UserCreate,
+  licenseFront: File,
+  licenseBack: File
 ): Promise<CreatedUserSuccessResponse> => {
   try {
     userData.password = await bcrypt.hash(userData.password, saltRounds);
@@ -45,6 +48,18 @@ const userRegister = async (
     const createdUserId = await createUser(userData);
     const createdUser = await getUserByIdFromModel(createdUserId);
 
+    const frontSaveFile = await saveFile({
+      file: licenseFront,
+      fileUsage: "license_front",
+    });
+
+    const backSaveFile = await saveFile({
+      file: licenseBack,
+      fileUsage: "license_back",
+    });
+
+    console.log("frontSaveFile", frontSaveFile);
+    console.log("backSaveFile", backSaveFile);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = createdUser;
 
