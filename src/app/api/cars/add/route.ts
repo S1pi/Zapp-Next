@@ -3,6 +3,7 @@ import formattedErrors from "@/lib/formattedErrors";
 import { addNewCar } from "@/services/carService";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { FileSchema } from "@/lib/FileSchema";
 
 const CarSchema = z.object({
   dealership_id: z
@@ -23,6 +24,7 @@ const CarSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  const userId = req.headers.get("X-User-Id");
   const userRole = req.headers.get("X-User-Role");
 
   if (userRole !== "admin" && userRole !== "dealer") {
@@ -34,31 +36,56 @@ export async function POST(req: NextRequest) {
       { status: 403 }
     );
   }
-  try {
-    const bodyText = await req.text();
 
-    if (!bodyText) {
+  try {
+    const formData = await req.formData();
+
+    const bodyData = formData.get("data");
+    const carShowCase = formData.get("car_showcase");
+
+    if (!bodyData || typeof bodyData !== "string") {
       return NextResponse.json(
         { error: "Request body is required" },
         { status: 400 }
       );
     }
 
-    const parsedCar = CarSchema.safeParse(JSON.parse(bodyText));
-
-    if (!parsedCar.success) {
+    if (!carShowCase || !(carShowCase instanceof File)) {
       return NextResponse.json(
-        { errors: formattedErrors(parsedCar.error.errors) },
+        { error: "Car showcase image is required" },
         { status: 400 }
       );
     }
 
-    const carInfo = parsedCar.data;
+    const parsedCarData = CarSchema.safeParse(JSON.parse(bodyData));
+    const parsedCarShowcase = FileSchema.safeParse(carShowCase);
 
-    const createdCar = await addNewCar(carInfo);
+    if (!parsedCarShowcase.success) {
+      return NextResponse.json(
+        { errors: formattedErrors(parsedCarShowcase.error.errors) },
+        { status: 400 }
+      );
+    }
+
+    if (!parsedCarData.success) {
+      return NextResponse.json(
+        { errors: formattedErrors(parsedCarData.error.errors) },
+        { status: 400 }
+      );
+    }
+
+    const carInfo = parsedCarData.data;
+
+    const createdCar = await addNewCar(
+      Number(userId),
+      carInfo,
+      parsedCarShowcase.data
+    );
 
     return NextResponse.json(createdCar, { status: 201 });
   } catch (err) {
+    console.error("Error adding car:", err);
+
     if (err instanceof NotFoundError) {
       return NextResponse.json(
         { error: "Not Found", message: err.message },
@@ -66,7 +93,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.error("Error adding car:", err);
+    if (err instanceof TypeError) {
+      if (err.message.includes('"multipart/form-data"')) {
+        return NextResponse.json(
+          { error: "Invalid Content-Type", message: err.message },
+          { status: 400 }
+        );
+      }
+    }
 
     return NextResponse.json(
       { error: "Internal Server Error", message: "Failed to add car" },

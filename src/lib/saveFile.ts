@@ -36,6 +36,10 @@ export async function saveFile({ file, fileUsage }: SaveFileOptions) {
       relativeFilePath = "secure_uploads/licenses"; // This is real path for pictures
       secureUrlPrefix = "secure_uploads/licenses"; // This is real path for pictures
       break;
+    case "car_showcase":
+      relativeFilePath = "public/uploads/cars";
+      publicUrlPrefix = "/uploads/cars";
+      break;
     default:
       throw new InvalidFileUsageType("Unsupported file usage type");
   }
