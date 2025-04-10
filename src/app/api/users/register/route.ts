@@ -1,7 +1,7 @@
 import { DuplicateEntryError } from "@/lib/customErrors";
+import { FileSchema } from "@/lib/FileSchema";
 import formattedErrors from "@/lib/formattedErrors";
 import { userRegister } from "@/services/userService";
-import { UserCreate, UserWithoutPassword } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -40,31 +40,6 @@ const UserSchema = z.object({
     }),
   address: z.string().trim().nonempty({ message: "Address is required" }),
 });
-
-const validTypes = ["image/jpeg", "image/png", "image/jpg"];
-const fileSizeLimit = 2 * 1024 * 1024; // 2MB
-
-const FileSchema = z
-  .instanceof(File)
-  .refine((file) => file.size <= fileSizeLimit, {
-    message: `File size must be less than ${fileSizeLimit / 1024 / 1024} MB`,
-  })
-  .refine((file) => validTypes.includes(file.type), {
-    message: `File type must be one of the following: ${validTypes.join(", ")}`,
-  })
-  .refine(
-    (file) => {
-      const fileName = file.name.toLowerCase();
-      return (
-        fileName.endsWith(".jpg") ||
-        fileName.endsWith(".jpeg") ||
-        fileName.endsWith(".png")
-      );
-    },
-    {
-      message: `File name must end with .jpg, .jpeg, or .png`,
-    }
-  );
 
 export async function POST(req: NextRequest) {
   try {
