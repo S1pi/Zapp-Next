@@ -43,22 +43,63 @@ const UserSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    console.log("Request Headers:", req.headers.get("content-type"));
+    console.log("Request Method:", req.method);
     const formData = await req.formData();
 
-    const licenseFront = formData.get("license_front");
-    const licenseBack = formData.get("license_back");
+    // console.log("Form Data:", formData);
+
+    // This would be the most efficient way to get the files,
+    // but because of the FUCKING EXPO GO!!, we have to use base64 instead of files
+    // const licenseFront = formData.get("license_front");
+    // const licenseBack = formData.get("license_back");
+
+    const licenseFrontBase64 = formData.get("license_front_base64");
+    const licenseBackBase64 = formData.get("license_back_base64");
     const bodyData = formData.get("data");
+
+    const licenseFrontBuffer = Buffer.from(
+      licenseFrontBase64 as string,
+      "base64"
+    );
+    const licenseBackBuffer = Buffer.from(
+      licenseBackBase64 as string,
+      "base64"
+    );
+    const licenseFront = new File([licenseFrontBuffer], "license_front.jpg", {
+      type: "image/jpeg",
+    });
+    const licenseBack = new File([licenseBackBuffer], "license_back.jpg", {
+      type: "image/jpeg",
+    });
+
+    console.log("licenseFront", licenseFront);
+    console.log("licenseBack", licenseBack);
+
+    if (
+      typeof licenseFrontBase64 !== "string" ||
+      typeof licenseBackBase64 !== "string"
+    ) {
+      return NextResponse.json(
+        {
+          message: "Base64 images of drivinglicenses are required",
+        },
+        { status: 400 }
+      );
+    }
 
     if (!licenseFront || !licenseBack) {
       return NextResponse.json(
-        { error: "Both front and back images of drivinglicenses are required" },
+        {
+          message: "Both front and back images of drivinglicenses are required",
+        },
         { status: 400 }
       );
     }
 
     if (!bodyData || typeof bodyData !== "string") {
       return NextResponse.json(
-        { error: "Request body is required" },
+        { message: "Request body is required" },
         { status: 400 }
       );
     }
@@ -75,7 +116,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           errors: formattedErrors(parsedLicenseFront.error.issues),
-          message: "invalid data from license front",
+          // message: "invalid data from license front",
         },
         { status: 400 }
       );
@@ -85,7 +126,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           errors: formattedErrors(parsedLicenseBack.error.issues),
-          message: "invalid data from license back",
+          // message: "invalid data from license back",
         },
         { status: 400 }
       );
@@ -95,7 +136,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           errors: formattedErrors(user.error.issues),
-          message: "invalid data from user",
+          // message: "invalid data from user",
         },
         { status: 400 }
       );
@@ -110,6 +151,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(createdUser, { status: 201 });
     // return NextResponse.json({ message: "Testing works" }, { status: 201 });
   } catch (err) {
+    console.log("Error in register route:", err);
+
     if (err instanceof DuplicateEntryError) {
       return NextResponse.json(
         { message: err.message },
