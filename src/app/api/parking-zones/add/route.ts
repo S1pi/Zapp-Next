@@ -1,39 +1,82 @@
+import formattedErrors from "@/lib/formattedErrors";
 import { addParkingZone } from "@/services/parkingService";
 import { NewParkingZone } from "@/types/parking";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+const ParkingZoneSchema = z.object({
+  name: z.string().min(1, "Name is required").max(50, "Name is too long"),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(500, "Description is too long"),
+  location: z
+    .array(
+      z.object({
+        latitude: z
+          .number()
+          .min(-90, "Latitude must be between -90 and 90")
+          .max(90),
+        longitude: z
+          .number()
+          .min(-180, "Longitude must be between -180 and 180")
+          .max(180),
+      })
+    )
+    .length(2, "Location must have exactly two coordinates"),
+});
 
 export async function POST(request: Request) {
-  //   const role = request.headers.get("X-User-Role");
+  const role = request.headers.get("X-User-Role");
 
-  //   if (role !== "admin") {
-  //     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  //   }
-
-  const bodyText = await request.text();
-
-  if (!bodyText) {
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  if (role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = JSON.parse(bodyText);
+  try {
+    const bodyText = await request.text();
 
-  const { name, description, location }: NewParkingZone = body;
+    if (!bodyText) {
+      return NextResponse.json(
+        { error: "Invalid request, body is required" },
+        { status: 400 }
+      );
+    }
 
-  // For visual reference location:
-  // [
-  //   { latitude: 1, longitude: 2 }, // topLeft
-  //   { latitude: 3, longitude: 4 }, // bottomRight
-  // ]
+    const body = JSON.parse(bodyText);
 
-  // Zod validation can be added here if needed
+    const parsedBody = ParkingZoneSchema.safeParse(body);
+    if (!parsedBody.success) {
+      return NextResponse.json(
+        { errors: formattedErrors(parsedBody.error.errors) },
+        { status: 400 }
+      );
+    }
 
-  const parkingZoneResponse = await addParkingZone({
-    name,
-    description,
-    location,
-  });
+    const { name, description, location }: NewParkingZone = parsedBody.data;
 
-  console.log(parkingZoneResponse);
+    const parkingZoneResponse = await addParkingZone({
+      name,
+      description,
+      location,
+    });
 
-  return NextResponse.json(parkingZoneResponse, { status: 201 });
+    console.log(parkingZoneResponse);
+
+    return NextResponse.json(parkingZoneResponse, { status: 201 });
+  } catch (err) {
+    console.log(err);
+
+    if (err instanceof SyntaxError) {
+      return NextResponse.json(
+        { error: "Invalid JSON format" },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
