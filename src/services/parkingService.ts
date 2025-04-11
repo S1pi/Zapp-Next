@@ -40,7 +40,7 @@ const calculateCoordinates = (parkingZone: ParkingZoneQuery): ParkingZone => {
     id,
     name,
     description,
-    location: [topLeft, bottomRight, topRight, bottomLeft],
+    location: [topLeft, topRight, bottomRight, bottomLeft],
   };
 
   return parkingZoneCoords;
