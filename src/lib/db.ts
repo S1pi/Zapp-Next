@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const dbConnection = mysql.createPool({
+const promisePool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
@@ -13,4 +13,4 @@ const dbConnection = mysql.createPool({
   queueLimit: 0,
 });
 
-export default dbConnection;
+export default promisePool;

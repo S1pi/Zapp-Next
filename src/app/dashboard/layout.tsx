@@ -11,7 +11,7 @@ const adminUser: UserWithoutPassword = {
   postnumber: "1234",
   address: "Admin Street 1",
   validated: true,
-  role: "dealer",
+  role: "admin",
   created_at: new Date().toISOString(),
 };
 

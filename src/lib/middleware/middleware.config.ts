@@ -4,8 +4,11 @@ import { verifyToken } from "./verifyToken";
 type MiddlewareMap = Record<string, MiddlewareFunc[]>;
 
 const middlewareConfig: MiddlewareMap = {
-  // "/api/admin": [],
-  "/api/users/getbytoken": [verifyToken],
   "/api/public": [],
+  "/api/users/getbytoken": [verifyToken],
+  "/api/dealership": [verifyToken],
+  "/api/cars": [verifyToken],
+  "/api/users/modify": [verifyToken],
+  "/api/securefiles": [verifyToken],
 };
 export default middlewareConfig;

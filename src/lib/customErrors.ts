@@ -1,7 +1,7 @@
 export class DuplicateEntryError extends Error {
   statusCode: number;
 
-  constructor(message: string, statusCode = 400) {
+  constructor(message: string, statusCode = 409) {
     super(message);
     this.statusCode = statusCode;
     this.name = "DuplicateEntryError";
@@ -43,5 +43,17 @@ export class ForbiddenError extends Error {
     this.name = "ForbiddenError";
 
     Object.setPrototypeOf(this, ForbiddenError.prototype);
+  }
+}
+
+export class InvalidFileUsageType extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode = 400) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = "InvalidFileUsageType";
+
+    Object.setPrototypeOf(this, InvalidFileUsageType.prototype);
   }
 }

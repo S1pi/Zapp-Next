@@ -21,7 +21,7 @@ CREATE TABLE users (
   phone_number VARCHAR(255) NOT NULL UNIQUE,
   postnumber VARCHAR(50) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  validated BOOLEAN DEFAULT FALSE,
+  is_validated BOOLEAN DEFAULT FALSE,
   role ENUM('admin', 'dealer', 'user') DEFAULT 'user',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -46,7 +46,7 @@ CREATE TABLE cars (
   location_id INT DEFAULT NULL, 
   latitude DECIMAL(10, 8) DEFAULT NULL,
   longitude DECIMAL(11, 8) DEFAULT NULL,
-  reserved BOOLEAN DEFAULT FALSE,
+  is_reserved BOOLEAN DEFAULT FALSE,
   FOREIGN KEY (dealership_id) REFERENCES dealerships(id) ON DELETE CASCADE,
   FOREIGN KEY (location_id) REFERENCES parking_zones(id) ON DELETE SET NULL
 );
@@ -65,4 +65,39 @@ CREATE TABLE reservations (
   end_location VARCHAR(255) NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
+);
+
+CREATE TABLE files (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT DEFAULT NULL, -- The user who uploaded the file
+  file_name VARCHAR(255) NOT NULL,
+  file_url VARCHAR(255) NOT NULL,
+  file_type VARCHAR(50) NOT NULL,
+  file_usage VARCHAR(50) NOT NULL,
+  related_type ENUM('user', 'car') NOT NULL, -- The type of entity the file is related to (user or car)
+  related_id INT NOT NULL, -- The ID of the user or car the file is related to
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE driving_licenses (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  front_license_url VARCHAR(255) NOT NULL,
+  back_license_url VARCHAR(255) NOT NULL,
+  is_verified BOOLEAN DEFAULT FALSE,
+  expiry_date DATE DEFAULT NULL, -- Expiry date of the driving license, Admin can set this while verifying the license
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE dropoff_pictures (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reservation_id INT NOT NULL,
+  front_url VARCHAR(255) NOT NULL,
+  back_url VARCHAR(255) NOT NULL,
+  side_left_url VARCHAR(255) NOT NULL,
+  side_right_url VARCHAR(255) NOT NULL,
+  uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE
 );

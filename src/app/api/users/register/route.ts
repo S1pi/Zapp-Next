@@ -1,7 +1,7 @@
 import { DuplicateEntryError } from "@/lib/customErrors";
+import { FileSchema } from "@/lib/FileSchema";
 import formattedErrors from "@/lib/formattedErrors";
 import { userRegister } from "@/services/userService";
-import { UserCreate, UserWithoutPassword } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -43,34 +43,130 @@ const UserSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    // Check if request body is empty
-    const bodyText = await req.text();
+    console.log("Request Headers:", req.headers.get("content-type"));
+    console.log("Request Method:", req.method);
+    const formData = await req.formData();
 
-    if (!bodyText) {
+    // console.log("Form Data:", formData);
+
+    // This would be the most efficient way to get the files,
+    // but because of the FUCKING EXPO GO!!, we have to use base64 instead of files
+    // const licenseFront = formData.get("license_front");
+    // const licenseBack = formData.get("license_back");
+
+    const licenseFrontBase64 = formData.get("license_front_base64");
+    const licenseBackBase64 = formData.get("license_back_base64");
+    const bodyData = formData.get("data");
+
+    const licenseFrontBuffer = Buffer.from(
+      licenseFrontBase64 as string,
+      "base64"
+    );
+    const licenseBackBuffer = Buffer.from(
+      licenseBackBase64 as string,
+      "base64"
+    );
+    const licenseFront = new File([licenseFrontBuffer], "license_front.jpg", {
+      type: "image/jpeg",
+    });
+    const licenseBack = new File([licenseBackBuffer], "license_back.jpg", {
+      type: "image/jpeg",
+    });
+
+    console.log("licenseFront", licenseFront);
+    console.log("licenseBack", licenseBack);
+
+    if (
+      typeof licenseFrontBase64 !== "string" ||
+      typeof licenseBackBase64 !== "string"
+    ) {
       return NextResponse.json(
-        { error: "Request body is required" },
+        {
+          message: "Base64 images of drivinglicenses are required",
+        },
         { status: 400 }
       );
     }
 
-    // Parse request body to JSON if it's not empty
-    const userInfo = JSON.parse(bodyText);
+    if (!licenseFront || !licenseBack) {
+      return NextResponse.json(
+        {
+          message: "Both front and back images of drivinglicenses are required",
+        },
+        { status: 400 }
+      );
+    }
 
-    const user = UserSchema.safeParse(userInfo);
+    if (!bodyData || typeof bodyData !== "string") {
+      return NextResponse.json(
+        { message: "Request body is required" },
+        { status: 400 }
+      );
+    }
+
+    console.log("licenseFront", licenseFront instanceof File);
+    console.log("licenseBack", licenseBack instanceof File);
+
+    const parsedBodyData = JSON.parse(bodyData);
+    const user = UserSchema.safeParse(parsedBodyData);
+    const parsedLicenseFront = FileSchema.safeParse(licenseFront);
+    const parsedLicenseBack = FileSchema.safeParse(licenseBack);
+
+    if (!parsedLicenseFront.success) {
+      return NextResponse.json(
+        {
+          errors: formattedErrors(parsedLicenseFront.error.issues),
+          // message: "invalid data from license front",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!parsedLicenseBack.success) {
+      return NextResponse.json(
+        {
+          errors: formattedErrors(parsedLicenseBack.error.issues),
+          // message: "invalid data from license back",
+        },
+        { status: 400 }
+      );
+    }
 
     if (!user.success) {
       return NextResponse.json(
-        { errors: formattedErrors(user.error.issues) },
+        {
+          errors: formattedErrors(user.error.issues),
+          // message: "invalid data from user",
+        },
         { status: 400 }
       );
     }
 
-    const createdUser = await userRegister(user.data);
+    const createdUser = await userRegister(
+      user.data,
+      parsedLicenseFront.data,
+      parsedLicenseBack.data
+    );
 
     return NextResponse.json(createdUser, { status: 201 });
+    // return NextResponse.json({ message: "Testing works" }, { status: 201 });
   } catch (err) {
+    console.log("Error in register route:", err);
+
     if (err instanceof DuplicateEntryError) {
-      return new NextResponse(err.message, { status: err.statusCode });
+      return NextResponse.json(
+        { message: err.message },
+        { status: err.statusCode }
+      );
+    }
+
+    if (err instanceof TypeError) {
+      if (err.message.includes('"multipart/form-data"')) {
+        return NextResponse.json(
+          { error: "Invalid Content-Type", message: err.message },
+          { status: 400 }
+        );
+      }
     }
 
     return new NextResponse(`Error: ${(err as Error).message}`, {
