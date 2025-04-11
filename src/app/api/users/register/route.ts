@@ -47,8 +47,6 @@ export async function POST(req: NextRequest) {
     console.log("Request Method:", req.method);
     const formData = await req.formData();
 
-    // console.log("Form Data:", formData);
-
     // This would be the most efficient way to get the files,
     // but because of the FUCKING EXPO GO!!, we have to use base64 instead of files
     // const licenseFront = formData.get("license_front");
@@ -57,6 +55,27 @@ export async function POST(req: NextRequest) {
     const licenseFrontBase64 = formData.get("license_front_base64");
     const licenseBackBase64 = formData.get("license_back_base64");
     const bodyData = formData.get("data");
+
+    if (!licenseFrontBase64 || !licenseBackBase64) {
+      return NextResponse.json(
+        {
+          message: "Images of drivinglicenses are required",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (
+      typeof licenseFrontBase64 !== "string" ||
+      typeof licenseBackBase64 !== "string"
+    ) {
+      return NextResponse.json(
+        {
+          error: "Base64 images of drivinglicenses must be strings",
+        },
+        { status: 400 }
+      );
+    }
 
     const licenseFrontBuffer = Buffer.from(
       licenseFrontBase64 as string,
@@ -76,24 +95,12 @@ export async function POST(req: NextRequest) {
     console.log("licenseFront", licenseFront);
     console.log("licenseBack", licenseBack);
 
-    if (
-      typeof licenseFrontBase64 !== "string" ||
-      typeof licenseBackBase64 !== "string"
-    ) {
-      return NextResponse.json(
-        {
-          message: "Base64 images of drivinglicenses are required",
-        },
-        { status: 400 }
-      );
-    }
-
     if (!licenseFront || !licenseBack) {
       return NextResponse.json(
         {
-          message: "Both front and back images of drivinglicenses are required",
+          message: "Something went wrong transforming the base64 images",
         },
-        { status: 400 }
+        { status: 500 }
       );
     }
 
