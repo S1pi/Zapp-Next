@@ -36,6 +36,8 @@
 
   /* Shadows */
   --shadow-dataCard: 6px 10px 34px 1px rgba(0, 0, 0, 0.08);
+  --shadow-loginform: 0 10px 25px rgba(0, 0, 0, 0.2),
+    0 8px 10px rgba(0, 0, 0, 0.1);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
