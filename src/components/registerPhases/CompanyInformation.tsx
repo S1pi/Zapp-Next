@@ -29,7 +29,7 @@ export const CompanyInformation = ({
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="companyName" className="text-primary">
+          <label htmlFor="companyName" className="text-seabed-green">
             Yrityksen nimi
           </label>
           <input
@@ -37,14 +37,14 @@ export const CompanyInformation = ({
             id="companyName"
             value={information.companyName}
             placeholder="Zapp Oy"
-            className="border border-black-zapp rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
+            className="border border-seabed-green rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
             onChange={(e) => {
               setInformation({ ...information, companyName: e.target.value });
             }}
           />
         </div>
         <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="companyId" className="text-primary">
+          <label htmlFor="companyId" className="text-seabed-green">
             Y-tunnus
           </label>
           <input
@@ -62,7 +62,7 @@ export const CompanyInformation = ({
           />
         </div>
         <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="companyAddress" className="text-primary">
+          <label htmlFor="companyAddress" className="text-seabed-green">
             Osoite
           </label>
           <input
@@ -79,18 +79,27 @@ export const CompanyInformation = ({
             }}
           />
         </div>
-        <div className="text-primary flex flex-col gap-2 w-full">
-          <p className="text-sm text-primary">
+        <div className="text-secondary flex flex-col gap-2 w-full">
+          <p className="text-sm">
             Jatkamalla vahvistan lukeneeni ja hyväksyväni ZAPP:n{" "}
-            <Link href={"/companyinfo/termsofuse"} className="underline">
+            <Link
+              href={"/companyinfo/termsofuse"}
+              className="underline text-seabed-green"
+            >
               käyttöehdot yrityksille
             </Link>
             ,{" "}
-            <Link href={"/companyinfo/privacy"} className="underline">
+            <Link
+              href={"/companyinfo/privacy"}
+              className="underline text-seabed-green"
+            >
               tietosuojakäytännön
             </Link>{" "}
             ja{" "}
-            <Link href={"/companyinfo/serviceagreement"} className="underline">
+            <Link
+              href={"/companyinfo/serviceagreement"}
+              className="underline text-seabed-green"
+            >
               palvelusopimuksen
             </Link>
             . Ymmärrän myös, miten ZAPP käsittelee yrityksen tietoja.
@@ -98,7 +107,7 @@ export const CompanyInformation = ({
         </div>
         <button
           type="submit"
-          className="bg-black-zapp text-white rounded p-2 hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer"
+          className="bg-seabed-green text-white rounded p-2 hover:bg-black-zapp transition duration-300 ease-in-out cursor-pointer"
         >
           Seuraava
         </button>

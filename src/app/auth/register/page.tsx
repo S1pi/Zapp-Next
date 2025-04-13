@@ -3,7 +3,7 @@ import { CompanyInformation } from "@/components/registerPhases/CompanyInformati
 import { Confirmation } from "@/components/registerPhases/Confirmation";
 import { UserInformation } from "@/components/registerPhases/UserInformation";
 import { IoArrowBackOutline } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { UserInformation2 } from "@/components/registerPhases/UserInformation2";
 
@@ -66,30 +66,32 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-secondary flex flex-col items-center gap-8 p-8 h-full w-1/2 rounded-2xl shadow-loginform">
+    <div className="bg-primary text-secondary flex flex-col items-center gap-8 p-8 h-full w-1/2 rounded-2xl shadow-loginform">
       <div className="flex items-center gap-2 w-full justify-between">
         {step > 1 && (
           <button
-            className="flex justify-center rounded items-center hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer"
+            className="flex justify-center rounded items-center text-seabed-green hover:bg-seabed-green hover:text-primary transition duration-300 ease-in-out cursor-pointer"
             onClick={handlePreviousStep}
             type="button"
           >
             <IoArrowBackOutline size={30} />
-            <p className=" text-white p-2">Edellinen</p>
+            <p className="p-2">Edellinen</p>
           </button>
         )}
 
         {step === 1 && (
           <Link
-            className="flex justify-center rounded items-center hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer"
+            className="flex justify-center rounded items-center text-seabed-green hover:bg-seabed-green hover:text-primary transition duration-300 ease-in-out cursor-pointer"
             href={"/auth/login"}
           >
             <IoArrowBackOutline size={30} />
-            <p className=" text-white p-2">Takaisin kirjautumiseen</p>
+            <p className=" p-2">Takaisin kirjautumiseen</p>
           </Link>
         )}
 
-        <h4 className="text-base text-center">Vaihe {step}/4</h4>
+        <h4 className="text-base text-center text-seabed-green">
+          Vaihe {step}/4
+        </h4>
       </div>
       {step === 1 && (
         <CompanyInformation

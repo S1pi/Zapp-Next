@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 export default function LoginPage() {
@@ -11,25 +12,32 @@ export default function LoginPage() {
         }}
       ></div>
 
-      <img
+      <Image
         src="/mersu-eqe.png"
         alt=""
-        className="absolute bottom-1/3 transform left-1/5 -translate-x-1/2 -scale-x-100"
+        className="absolute top-1 transform left-1/5 -translate-x-1/2 -scale-x-100"
         width="450"
+        height="450"
       />
-      <img
+      <Image
         src="/Zapp-auto-musta.png"
         alt=""
-        className="absolute bottom-0 transform left-1/3 -translate-x-1/2"
-        width="800"
+        className="absolute bottom-0 transform left-1/3 -translate-x-1/2 z-10"
+        width="700"
+        height="600"
       />
-      <div className="bg-primary flex flex-col items-center p-8 h-full w-1/3 relative rounded-2xl shadow-loginform mr-20">
+      <div className="bg-primary flex flex-col items-center p-8 h-full w-1/3 relative rounded-2xl shadow-loginform z-50 xl:mr-20">
         {/* <div className="absolute top-14 p-2">
         <img src="/zapp-text-logo.png" alt="Logo" width="450" />
         </div> */}
         {/* Image Container */}
         <div className="flex-1 pt-6 pb-6 flex items-center justify-center">
-          <img src="/zapp-text-logo.png" alt="Logo" width="450" />
+          <Image
+            src="/zapp-text-logo.png"
+            alt="Logo"
+            width="450"
+            height="450"
+          />
         </div>
         {/* Form Container */}
         <h1 className="text-secondary font-semibold">Kirjaudu sisään</h1>
