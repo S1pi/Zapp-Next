@@ -1,4 +1,4 @@
-import { NotFoundError } from "@/lib/customErrors";
+import { MissingDataError, NotFoundError } from "@/lib/customErrors";
 import promisePool from "@/lib/db";
 import { User, UserCreate } from "@/types/user";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
@@ -78,4 +78,29 @@ const updateUserRole = async (id: number, role: string) => {
   }
 };
 
-export { getUserById, createUser, getUserByEmailOrPhone, updateUserRole };
+const checkEmailOrPhoneExists = async (
+  email: string | null,
+  phone: string | null
+): Promise<boolean> => {
+  if (!email && !phone) {
+    throw new MissingDataError(
+      "Either email or phone number must be provided."
+    );
+  }
+
+  const query = `SELECT COUNT(*) as count FROM users WHERE ${
+    email ? "email = ?" : ""
+  } ${phone ? (email ? "OR" : "") + " phone_number = ?" : ""}`;
+  const values = [email, phone].filter(Boolean);
+
+  const [rows] = await promisePool.query<RowDataPacket[]>(query, values);
+  return rows[0].count > 0;
+};
+
+export {
+  getUserById,
+  createUser,
+  getUserByEmailOrPhone,
+  updateUserRole,
+  checkEmailOrPhoneExists,
+};

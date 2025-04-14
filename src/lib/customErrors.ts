@@ -57,3 +57,15 @@ export class InvalidFileUsageType extends Error {
     Object.setPrototypeOf(this, InvalidFileUsageType.prototype);
   }
 }
+
+export class MissingDataError extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode = 422) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = "MissingDataError";
+
+    Object.setPrototypeOf(this, MissingDataError.prototype);
+  }
+}
