@@ -22,13 +22,16 @@ export async function GET(req: NextRequest) {
 
     if (userExists) {
       return NextResponse.json(
-        { message: "User with this email or phone number already exists" },
+        {
+          message: "User with this email or phone number already exists",
+          available: false,
+        },
         { status: 409 }
       );
     }
 
     return NextResponse.json(
-      { message: "Email and phonenumber available" },
+      { message: "Email and phonenumber available", available: true },
       { status: 200 }
     );
   } catch (err) {
