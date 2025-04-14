@@ -41,6 +41,11 @@ const UserSchema = z.object({
   address: z.string().trim().nonempty({ message: "Address is required" }),
 });
 
+const normalizePhoneNumber = (phone: string) => {
+  phone.trim().replace(/\s+/g, "").replace(/^0/, "+358");
+  return phone;
+};
+
 export async function POST(req: NextRequest) {
   try {
     console.log("Request Headers:", req.headers.get("content-type"));
@@ -148,6 +153,10 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Normalize the phone number to +358 format
+    const normalizedPhone = normalizePhoneNumber(user.data.phone_number);
+    user.data.phone_number = normalizedPhone;
 
     const createdUser = await userRegister(
       user.data,

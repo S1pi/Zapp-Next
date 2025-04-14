@@ -2,11 +2,22 @@ import { MissingDataError } from "@/lib/customErrors";
 import { checkEmailOrPhoneExists } from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 
+const normalizePhoneNumber = (phone: string) => {
+  phone.trim().replace(/\s+/g, "").replace(/^0/, "+358");
+  return phone;
+};
+
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
 
   const email = searchParams.get("email");
-  const phone = searchParams.get("phone");
+  let phone = searchParams.get("phone");
+
+  if (phone) {
+    const normalizedPhone = normalizePhoneNumber(phone);
+    console.log("Normalized phone:", normalizedPhone);
+    phone = normalizedPhone;
+  }
 
   console.log(
     "Checking for user registration with email:",
