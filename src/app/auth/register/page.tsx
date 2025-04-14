@@ -66,7 +66,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="bg-primary text-secondary flex flex-col items-center gap-8 p-8 h-full w-1/2 rounded-2xl shadow-loginform">
+    <div className="bg-primary text-secondary flex flex-col items-center gap-8 p-8 h-full w-1/2 min-w-2xl rounded-2xl shadow-loginform">
       <div className="flex items-center gap-2 w-full justify-between">
         {step > 1 && (
           <button

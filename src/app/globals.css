@@ -41,6 +41,10 @@
 
   --drop-shadow-text: 0 1.2px 1.2px rgba(0, 0, 0, 0.8);
 
+  /* Breakpoints */
+
+  --breakpoint-mid-xl: 85rem; /* 1360px */
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

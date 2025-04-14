@@ -15,7 +15,7 @@ export default function LoginPage() {
       <Image
         src="/mersu-eqe.png"
         alt=""
-        className="absolute top-1 transform left-1/5 -translate-x-1/2 -scale-x-100"
+        className="absolute bottom-1/3 transform left-1/5 -translate-x-1/2 -translate-y-1/3 -scale-x-100"
         width="450"
         height="450"
       />
@@ -26,7 +26,7 @@ export default function LoginPage() {
         width="700"
         height="600"
       />
-      <div className="bg-primary flex flex-col items-center p-8 h-full w-1/3 relative rounded-2xl shadow-loginform z-50 xl:mr-20">
+      <div className="bg-primary flex flex-col items-center p-8 h-full w-1/3 min-w-md relative rounded-2xl shadow-loginform z-50 mid-xl:mr-20">
         {/* <div className="absolute top-14 p-2">
         <img src="/zapp-text-logo.png" alt="Logo" width="450" />
         </div> */}
