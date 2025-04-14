@@ -20,6 +20,14 @@ const UserSchema = z.object({
     .max(32, { message: "Password must be at most 32 characters long" }),
 });
 
+const normalizePhoneNumber = (phone: string) => {
+  const normalizedPhone = phone
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/^0/, "+358");
+  return normalizedPhone;
+};
+
 export async function POST(req: NextRequest) {
   console.log("Request method:", req.method);
   try {
@@ -43,11 +51,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { email_or_phone, password } = user.data;
+    let { email_or_phone, password } = user.data;
 
     console.log(email_or_phone);
 
     // const emailOrPhoneType = emailOrPhone.includes("@") ? "email" : "phone number";
+
+    if (!email_or_phone.includes("@")) {
+      const normalizedPhone = normalizePhoneNumber(email_or_phone);
+      email_or_phone = normalizedPhone;
+    }
 
     const loginResponse: LoginResponse = await userLogin(
       email_or_phone,

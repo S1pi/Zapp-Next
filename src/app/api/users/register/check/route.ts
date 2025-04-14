@@ -3,8 +3,11 @@ import { checkEmailOrPhoneExists } from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 
 const normalizePhoneNumber = (phone: string) => {
-  phone.trim().replace(/\s+/g, "").replace(/^0/, "+358");
-  return phone;
+  const normalizedPhone = phone
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/^0/, "+358");
+  return normalizedPhone;
 };
 
 export async function GET(req: NextRequest) {
