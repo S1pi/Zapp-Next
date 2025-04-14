@@ -22,7 +22,7 @@ export const UserInformation2 = ({
 
   return (
     <div className="flex flex-col items-center h-full w-full px-8 gap-6">
-      <h1>Yrityksen edustajan kirjautumistiedot</h1>
+      <h1>Kirjautumistiedot</h1>
       <p className="text-sm text-black-zapp">
         HUOM: Tämä on sama tili jolla käytät ZAPP-sovellusta ja vuokraat autoja.
       </p>
