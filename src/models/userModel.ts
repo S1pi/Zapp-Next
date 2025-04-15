@@ -1,6 +1,6 @@
 import { MissingDataError, NotFoundError } from "@/lib/customErrors";
 import promisePool from "@/lib/db";
-import { User, UserCreate } from "@/types/user";
+import { User, UserCreate, UserUpdate } from "@/types/user";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const getUserById = async (id: number): Promise<User> => {
@@ -78,6 +78,26 @@ const updateUserRole = async (id: number, role: string) => {
   }
 };
 
+const updateUser = async (id: number, userData: UserUpdate): Promise<void> => {
+  const sql =
+    "UPDATE users SET email = ?, firstname = ?, lastname = ?, phone_number = ?, postnumber = ?, address = ? WHERE id = ?";
+  const values = [
+    userData.email,
+    userData.firstname,
+    userData.lastname,
+    userData.phone_number,
+    userData.postnumber,
+    userData.address,
+    id,
+  ];
+
+  const [result] = await promisePool.execute<ResultSetHeader>(sql, values);
+
+  if (result.affectedRows === 0) {
+    throw new NotFoundError("User not found");
+  }
+};
+
 const checkEmailOrPhoneExists = async (
   email: string | null,
   phone: string | null
@@ -103,4 +123,5 @@ export {
   getUserByEmailOrPhone,
   updateUserRole,
   checkEmailOrPhoneExists,
+  updateUser,
 };

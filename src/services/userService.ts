@@ -10,9 +10,10 @@ import {
   createUser,
   getUserByEmailOrPhone,
   updateUserRole,
+  updateUser,
 } from "@/models/userModel";
 import { CreatedUserSuccessResponse } from "@/types/responses";
-import { TokenData, UserCreate } from "@/types/user";
+import { TokenData, UserCreate, UserUpdate } from "@/types/user";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 
@@ -195,4 +196,25 @@ const modifyUserRole = async (userId: number, newRole: string) => {
   }
 };
 
-export { userRegister, userLogin, getUserById, modifyUserRole };
+const modifyUser = async (userId: number, userData: UserUpdate) => {
+  try {
+    const user = await getUserById(userId);
+
+    if (!user) {
+      throw new NotFoundError("User not found");
+    }
+
+    await updateUser(userId, userData);
+    const updatedUser = await getUserById(userId);
+
+    return updatedUser;
+  } catch (err) {
+    console.log("Error updating user", err);
+    if (err instanceof NotFoundError) {
+      throw new NotFoundError(err.message);
+    }
+    throw new Error("Internal server error: " + (err as Error).message);
+  }
+};
+
+export { userRegister, userLogin, getUserById, modifyUserRole, modifyUser };

@@ -16,6 +16,11 @@ type UserWithoutPassword = Omit<User, "password">;
 
 type UserCreate = Omit<User, "id" | "created_at" | "validated" | "role">;
 
+type UserUpdate = Omit<
+  UserWithoutPassword,
+  "id" | "created_at" | "validated" | "role"
+>;
+
 type TokenData = Pick<User, "id" | "validated" | "role">;
 
 type DriverLicenseData = {
@@ -40,4 +45,5 @@ export type {
   TokenData,
   DriverLicenseData,
   DriverLicenseUrlData,
+  UserUpdate,
 };
