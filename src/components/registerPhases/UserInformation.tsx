@@ -1,4 +1,10 @@
 import { UserInformationType } from "@/app/auth/register/page";
+import { userInformationSchema } from "@/lib/schemas/companyInformationSchema";
+import { z } from "zod";
+import { Form } from "../ui/Form";
+import { Input } from "../ui/Input";
+
+export type UserInformationFormValues = z.infer<typeof userInformationSchema>;
 
 type UserInformationProps = {
   information: UserInformationType;
@@ -11,13 +17,16 @@ export const UserInformation = ({
   setInformation,
   onNext,
 }: UserInformationProps) => {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate the form information here if needed
-
+  const handleSuccess = (data: UserInformationFormValues) => {
+    setInformation({
+      ...information,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      postnumber: data.postnumber,
+      address: data.address,
+    }); // Update the information state with the submitted data
     onNext(); // Call the onNext function to proceed to the next step
-    // Optionally, you can also reset the form or perform any other actions
+    console.log("OnNext called with data:", data);
   };
 
   return (
@@ -26,79 +35,46 @@ export const UserInformation = ({
       <p className="text-sm text-black-zapp">
         HUOM: Tämä on sama tili jolla käytät ZAPP-sovellusta ja vuokraat autoja.
       </p>
-      <form
-        className="flex flex-col gap-8 max-w-sm w-full"
-        onSubmit={handleSubmit}
+      <Form
+        validationSchema={userInformationSchema}
+        defaultValues={information}
+        onSuccess={handleSuccess}
+        className="flex flex-col max-w-sm gap-6 h-full"
       >
-        <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="firstName" className="text-primary">
-            Etunimi
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            value={information.firstname}
-            placeholder="Matti"
-            className="border border-black-zapp rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
-            onChange={(e) => {
-              setInformation({ ...information, firstname: e.target.value });
-            }}
-          />
-        </div>
-        <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="lastName" className="text-primary">
-            Sukunimi
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            value={information.lastname}
-            placeholder="Meikäläinen"
-            className="border border-black-zapp rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
-            onChange={(e) => {
-              setInformation({ ...information, lastname: e.target.value });
-            }}
-          />
-        </div>
-        <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="address" className="text-primary">
-            Kotiosoite
-          </label>
+        <Input
+          label="Etunimi"
+          name="firstname"
+          type="text"
+          placeholder="Matti"
+        />
 
-          <input
-            type="text"
-            id="address"
-            value={information.address}
-            placeholder="Kuusikatu 1"
-            className="border border-black-zapp rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
-            onChange={(e) => {
-              setInformation({ ...information, address: e.target.value });
-            }}
-          />
-        </div>
-        <div className="flex flex-col gap-2 w-full">
-          <label htmlFor="postalCode" className="text-primary">
-            Postinumero
-          </label>
-          <input
-            type="text"
-            id="postalCode"
-            value={information.postnumber}
-            placeholder="00100"
-            className="border border-black-zapp rounded p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none"
-            onChange={(e) => {
-              setInformation({ ...information, postnumber: e.target.value });
-            }}
-          />
-        </div>
+        <Input
+          label="Sukunimi"
+          name="lastname"
+          type="text"
+          placeholder="Meikäläinen"
+        />
 
+        <Input
+          label="Osoite"
+          name="address"
+          type="text"
+          placeholder="Kaivokatu 1A"
+        />
+
+        <Input
+          label="Postinumero"
+          name="postnumber"
+          type="text"
+          placeholder="00100"
+        />
         <button
           type="submit"
-          className="bg-black-zapp text-white rounded p-2 hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer"
+          className="bg-seabed-green text-white rounded p-2 hover:bg-black-zapp transition duration-300 ease-in-out cursor-pointer mt-2"
         >
           Jatka
         </button>
-      </form>
+      </Form>
     </div>
   );
 };

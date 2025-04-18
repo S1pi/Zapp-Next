@@ -21,35 +21,39 @@ export const Confirmation = ({
 
   return (
     <>
-      <h1>Vahvista tiedot</h1>
-      <div className="flex flex-row justify-evenly h-full w-full gap-6">
-        <div>
-          <h3>Yrityksen tiedot</h3>
-          <p>Yrityksen nimi: {companyInformation.companyName}</p>
-          <p>Y-tunnus: {companyInformation.companyRegistrationNumber}</p>
-          <p>Osoite: {companyInformation.companyAddress}</p>
+      <h1 className="text-seabed-green font-bold">Vahvista tiedot</h1>
+      <div className="flex flex-row justify-between h-full w-full gap-6">
+        <div className="flex flex-col gap-6 items-center">
+          <h3 className="text-seabed-green font-bold">Yrityksen tiedot</h3>
+          <div className="flex flex-col gap-4">
+            <p>Yrityksen nimi: {companyInformation.companyName}</p>
+            <p>Y-tunnus: {companyInformation.companyRegistrationNumber}</p>
+            <p>Osoite: {companyInformation.companyAddress}</p>
+          </div>
         </div>
-        <div>
-          <h3>Käyttäjän tiedot</h3>
-          <p>Etunimi: {userInformation.firstname}</p>
-          <p>Sukunimi: {userInformation.lastname}</p>
-          <p>Sähköposti: {userInformation.email}</p>
-          <p>Puhelin: {userInformation.phone}</p>
-          <p>Osoite: {userInformation.address}</p>
-          <p>Postinumero: {userInformation.postnumber}</p>
-          <div className="flex flex-row items-center gap-2">
-            <label htmlFor="password" className="text-primary">
-              Salasana:
-            </label>
-            <input
-              disabled
-              value={userInformation.password}
-              type={showPassword ? "text" : "password"}
-            />
-            <FaEye
-              className="cursor-pointer hover:text-black-zapp"
-              onClick={() => setShowPassword((prev) => !prev)}
-            />
+        <div className="flex flex-col gap-6 items-center ">
+          <h3 className="text-seabed-green font-bold">Käyttäjän tiedot</h3>
+          <div className="flex flex-col gap-4 ">
+            <p>Etunimi: {userInformation.firstname}</p>
+            <p>Sukunimi: {userInformation.lastname}</p>
+            <p>Sähköposti: {userInformation.email}</p>
+            <p>Puhelin: {userInformation.phone}</p>
+            <p>Osoite: {userInformation.address}</p>
+            <p>Postinumero: {userInformation.postnumber}</p>
+            <div className="flex flex-row items-center gap-2">
+              <label htmlFor="password">Salasana:</label>
+              <div className="flex flex-row items-center gap-2 border border-seabed-green rounded p-2">
+                <input
+                  disabled
+                  value={userInformation.password}
+                  type={showPassword ? "text" : "password"}
+                />
+                <FaEye
+                  className="cursor-pointer hover:text-black-zapp"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

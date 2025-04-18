@@ -1,30 +1,42 @@
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
-  error?: string;
-};
-// import clsx from "clsx"; // Used for conditional class names if needed example clsx("bg-red-500", "text-white")
+// import { useFormContext } from "react-hook-form";
+// "use client";
 
-export const Input = ({ label, error, id, ...props }: InputProps) => {
+import { useFormContext } from "react-hook-form";
+
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  name: string;
+  label: string;
+};
+
+export const Input = ({ name, label, ...rest }: InputProps) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+
   return (
     <div className="flex flex-col gap-2 w-full">
-      <label htmlFor={id} className="text-seabed-green">
-        {label}
-      </label>
-
+      <label className="text-seabed-green font-semibold">{label}</label>
       <input
-        {...props}
-        id={id}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={`border rounded p-2 focus:ring-2  focus:outline-none ${
-          props.className
-        } ${
-          error
-            ? "border-red-500 focus:ring-red-300"
-            : "border-black-zapp focus:ring-seabed-green"
-        }`}
+        {...rest}
+        className={`border rounded p-2 focus:ring-2 focus:outline-none ${
+          rest.className
+        }
+          ${
+            errors[name]
+              ? "border-red-500 focus:ring-red-300"
+              : "border-black-zapp focus:ring-seabed-green"
+          }
+        `}
+        {...register(name)}
+        aria-invalid={!!errors[name]}
+        aria-describedby={errors[name] ? `${name}-error` : undefined}
       />
-      {error && <span className="text-red-500 text-sm">{error}</span>}
+      {errors[name] && (
+        <span className="text-red-500 text-sm">
+          {errors[name]?.message as string}
+        </span>
+      )}
     </div>
   );
 };
