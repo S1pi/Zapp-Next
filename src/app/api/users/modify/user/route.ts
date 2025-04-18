@@ -2,6 +2,7 @@ import { NotFoundError } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
 import { validateRequest } from "@/lib/middleware/validateRequest";
 import { updateUser } from "@/models/userModel";
+import { modifyUser } from "@/services/userService";
 import { User, UserUpdate } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
 import z, { SafeParseSuccess } from "zod";
@@ -57,7 +58,7 @@ export async function PUT(req: NextRequest) {
       postnumber,
       address,
     };
-    const user = await updateUser(Number(userId), userData);
+    const user = await modifyUser(Number(userId), userData);
 
     return NextResponse.json(user, { status: 200 });
   } catch (err) {
