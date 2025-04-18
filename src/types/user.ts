@@ -14,6 +14,11 @@ type User = {
 
 type UserWithoutPassword = Omit<User, "password">;
 
+type LoginCredentials = {
+  email_or_phone: string;
+  password: string;
+};
+
 type UserCreate = Omit<User, "id" | "created_at" | "validated" | "role">;
 
 type UserUpdate = Omit<
@@ -46,4 +51,5 @@ export type {
   DriverLicenseData,
   DriverLicenseUrlData,
   UserUpdate,
+  LoginCredentials,
 };

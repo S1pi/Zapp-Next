@@ -4,8 +4,10 @@ import {
   UnauthorizedError,
 } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
+import { validateRequest } from "@/lib/middleware/validateRequest";
 import { userLogin } from "@/services/userService";
 import { LoginResponse } from "@/types/responses";
+import { LoginCredentials } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -31,29 +33,10 @@ const normalizePhoneNumber = (phone: string) => {
 export async function POST(req: NextRequest) {
   console.log("Request method:", req.method);
   try {
-    const bodyText = await req.text();
-    console.log("Request body:", bodyText);
+    const user = await validateRequest<LoginCredentials>(req, UserSchema);
+    if (user instanceof NextResponse) return user;
 
-    if (!bodyText) {
-      return NextResponse.json(
-        { error: "Request body is required" },
-        { status: 400 }
-      );
-    }
-
-    console.log("Parsed body:", JSON.parse(bodyText));
-    const user = UserSchema.safeParse(JSON.parse(bodyText));
-
-    if (!user.success) {
-      return NextResponse.json(
-        { errors: formattedErrors(user.error.errors) },
-        { status: 400 }
-      );
-    }
-
-    let { email_or_phone, password } = user.data;
-
-    console.log(email_or_phone);
+    let { email_or_phone, password } = user;
 
     // const emailOrPhoneType = emailOrPhone.includes("@") ? "email" : "phone number";
 
