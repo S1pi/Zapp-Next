@@ -22,8 +22,8 @@ export async function validateRequest<T>(
         { status: 400 }
       );
     }
-    const response = parsedBody.data;
-    return parsedBody.data as T;
+    const response = parsedBody.data as T;
+    return response;
   } catch (err) {
     console.error("Error validating request:", err);
     return NextResponse.json(
