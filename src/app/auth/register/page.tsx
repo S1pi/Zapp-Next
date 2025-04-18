@@ -4,8 +4,8 @@ import { Confirmation } from "@/components/registerPhases/Confirmation";
 import { UserInformation } from "@/components/registerPhases/UserInformation";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useState } from "react";
-import Link from "next/link";
 import { UserInformation2 } from "@/components/registerPhases/UserInformation2";
+import Link from "next/link";
 
 export type CompanyInformationType = {
   companyName: string;
@@ -25,8 +25,6 @@ export type UserInformationType = {
 };
 
 export default function RegisterPage() {
-  const [step, setStep] = useState(1);
-
   const companyInitValues = {
     companyName: "",
     companyRegistrationNumber: "",
@@ -43,10 +41,12 @@ export default function RegisterPage() {
     address: "",
   };
 
+  const [step, setStep] = useState(1);
   const [companyInformation, setCompanyInformation] =
     useState<CompanyInformationType>(companyInitValues);
   const [userInformation, setUserInformation] =
     useState<UserInformationType>(userInitValues);
+  const [errors, setErrors] = useState<Partial<CompanyInformationType>>({});
 
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePreviousStep = () => setStep((prev) => prev - 1);

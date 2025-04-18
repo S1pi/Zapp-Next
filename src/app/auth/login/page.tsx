@@ -16,8 +16,8 @@ export default function LoginPage() {
         src="/mersu-eqe.png"
         alt=""
         className="absolute bottom-1/3 transform left-1/5 -translate-x-1/2 -translate-y-1/3 -scale-x-100"
-        width="450"
-        height="450"
+        width={450}
+        height={450}
       />
       <Image
         src="/Zapp-auto-musta.png"
@@ -56,13 +56,6 @@ export default function LoginPage() {
             Kirjaudu
           </button>
         </form>
-        {/* <div className="bg-primary text-secondary rounded p-4 flex flex-col gap-2 shadow-loginform">
-          <h3>Haluatko ryhtyä ZAPP-vuokraajaksi?</h3>
-          <p>Rekisteröi yrityksesi ja luo oma käyttäjätilisi helposti</p>
-          <button className="bg-black-zapp text-white rounded p-2 hover:bg-black-zapp transition duration-300 ease-in-out cursor-pointer hover:text-black-zapp">
-            Rekisteröidy Nyt
-          </button>
-        </div> */}
         <div className="flex flex-col gap-2 justify-between items-center pb-4 text-black-zapp">
           <h5 className="text-lg font-bold">
             Haluatko ryhtyä ZAPP-vuokraajaksi?
@@ -70,7 +63,7 @@ export default function LoginPage() {
           <p>Rekisteröi yrityksesi ja luo oma käyttäjätilisi</p>
           <Link
             href={"/auth/register"}
-            className="bg-seabed-green text-primary rounded-2xl p-3 hover:bg-night-sky-blue transition duration-300 ease-in-out cursor-pointer hover:text-black-zapp w-7/8 text-center"
+            className="bg-seabed-green text-primary rounded-2xl p-3 hover:bg-black-zapp transition duration-300 ease-in-out cursor-pointer w-7/8 text-center"
           >
             Luo tili
           </Link>
