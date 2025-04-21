@@ -2,15 +2,27 @@ import {
   CompanyInformationType,
   UserInformationType,
 } from "@/app/auth/register/page";
-import Link from "next/link";
 import { useState } from "react";
 import { FaEye } from "react-icons/fa";
+import { Input } from "../ui/Input";
+import { Form } from "../ui/Form";
+import { TokenValidationSchema } from "@/lib/schemas/tokenCreateSchema";
+import { z } from "zod";
+import {
+  VerifyInviteActionResult,
+  verifyInviteToken,
+} from "@/app/actions/tokenActions";
 
 type ConfirmationProps = {
   companyInformation: CompanyInformationType;
   userInformation: UserInformationType;
-  onConfirmSubmit: () => void;
+  onConfirmSubmit: (
+    data: TokenValidationValues,
+    responseData: VerifyInviteActionResult
+  ) => void;
 };
+
+export type TokenValidationValues = z.infer<typeof TokenValidationSchema>;
 
 export const Confirmation = ({
   companyInformation,
@@ -18,6 +30,16 @@ export const Confirmation = ({
   onConfirmSubmit,
 }: ConfirmationProps) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  // const handleSuccess = (
+  //   data: TokenValidationValues,
+  //   responseData: VerifyInviteActionResult
+  // ) => {
+  //   console.log("Token validation response:", responseData);
+
+  //   // Call the onConfirmSubmit function to proceed to the next step
+  //   // onConfirmSubmit();
+  // };
 
   return (
     <>
@@ -57,13 +79,30 @@ export const Confirmation = ({
           </div>
         </div>
       </div>
-      <Link
-        href={"/auth/login"}
-        className="bg-black-zapp text-white rounded p-2 hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer"
-        onClick={onConfirmSubmit}
-      >
-        Vahvista ja Lähetä tiedot
-      </Link>
+
+      <div className="flex flex-col items-center h-full w-full px-8 gap-6">
+        <h5 className="text-xl">Syötä saamasi aktivointi koodi: </h5>
+        <Form
+          validationSchema={TokenValidationSchema}
+          serverAction={verifyInviteToken}
+          onSuccess={onConfirmSubmit}
+          className="flex flex-col gap-6 h-full justify-center items-center"
+        >
+          <Input
+            label="Aktivointi koodi"
+            name="inviteCode"
+            type="text"
+            placeholder="Syötä aktivointi koodi"
+          />
+
+          <button
+            type="submit"
+            className="bg-black-zapp text-white rounded p-2 hover:bg-seabed-green transition duration-300 ease-in-out cursor-pointer px-4"
+          >
+            Vahvista ja Lähetä tiedot
+          </button>
+        </Form>
+      </div>
     </>
   );
 };

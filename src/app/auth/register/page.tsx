@@ -1,11 +1,18 @@
 "use client";
 import { CompanyInformation } from "@/components/registerPhases/CompanyInformation";
-import { Confirmation } from "@/components/registerPhases/Confirmation";
+import {
+  Confirmation,
+  TokenValidationValues,
+} from "@/components/registerPhases/Confirmation";
 import { UserInformation } from "@/components/registerPhases/UserInformation";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useState } from "react";
 import { UserInformation2 } from "@/components/registerPhases/UserInformation2";
 import Link from "next/link";
+import { VerifyInviteActionResult } from "@/app/actions/tokenActions";
+import { submitRegisterAction } from "@/app/actions/registerActions";
+import { redirect } from "next/navigation";
+// import { ActionResult } from "@/components/ui/Form";
 
 export type CompanyInformationType = {
   companyName: string;
@@ -22,6 +29,14 @@ export type UserInformationType = {
   passwordConfirmation: string;
   postnumber: string;
   address: string;
+};
+
+export type UserRegister = Omit<UserInformationType, "passwordConfirmation"> & {
+  role: string;
+};
+
+export type CompanyRegister = CompanyInformationType & {
+  contact_id: number;
 };
 
 export default function RegisterPage() {
@@ -46,23 +61,51 @@ export default function RegisterPage() {
     useState<CompanyInformationType>(companyInitValues);
   const [userInformation, setUserInformation] =
     useState<UserInformationType>(userInitValues);
-  const [errors, setErrors] = useState<Partial<CompanyInformationType>>({});
 
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePreviousStep = () => setStep((prev) => prev - 1);
 
-  const handleRegisterSubmit = async () => {
-    // Handle the registration logic here, e.g., API call to register the user
+  const handleRegisterSubmit = async (
+    data: TokenValidationValues,
+    responseData: VerifyInviteActionResult
+  ) => {
+    const userRegister: UserRegister = {
+      ...userInformation,
+      role: responseData.roleToAssign,
+    };
 
-    // You can access companyInformation and userInformation here
-    console.log("Registeration submitted!");
-    console.log("Company Information:", companyInformation);
-    console.log("User Information:", userInformation);
+    const res = await submitRegisterAction(
+      companyInformation,
+      userRegister,
+      responseData.tokenId
+    );
+
+    if (!res.success) {
+      console.error("Registration failed:", res.message);
+      return;
+    }
+
+    console.log("handleRegisterSubmit called with response:", res);
 
     // Reset the form or redirect the user after successful registration
     setCompanyInformation(companyInitValues);
     setUserInformation(userInitValues);
     setStep(1); // Reset to the first step
+
+    // Meaby handle success with data that returns from the server
+    // Response is:
+    // {
+    //   success: true,
+    //   message: "User created successfully",
+    //   data: {
+    //     companyId: 1,
+    //     userId: 1,
+    //   },
+    // }
+
+    // For now we just redirect to the login page and alert the user that the registration was successful
+    alert("Rekisteröinti onnistui! Voit nyt kirjautua sisään.");
+    redirect("/auth/login");
   };
 
   return (

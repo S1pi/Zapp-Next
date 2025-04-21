@@ -5,6 +5,7 @@ import { Form } from "../ui/Form";
 import { Input } from "../ui/Input";
 import { FaEye } from "react-icons/fa";
 import { useState } from "react";
+import { registerActionUserLoginInfo } from "@/app/actions/registerActions";
 
 export type UserLoginInformationFormValues = z.infer<
   typeof userLoginInformationSchema
@@ -44,6 +45,7 @@ export const UserInformation2 = ({
       <Form
         validationSchema={userLoginInformationSchema}
         defaultValues={information}
+        serverAction={registerActionUserLoginInfo}
         onSuccess={handleSuccess}
         className="flex flex-col max-w-sm gap-6 h-full"
       >

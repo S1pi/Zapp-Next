@@ -13,8 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z, ZodSchema } from "zod";
 import { useState } from "react";
 
-export type ActionResult<TValues extends FieldValues = FieldValues> =
-  | { success: true }
+export type ActionResult<
+  TValues extends FieldValues = FieldValues,
+  TResult = Record<string, unknown>
+> =
+  | { success: true; message?: string; resultData?: TResult }
   | { success: false; field?: FieldPath<TValues>; message: string };
 
 type FormProps<TSchema extends ZodSchema<any>> = Omit<
@@ -27,7 +30,7 @@ type FormProps<TSchema extends ZodSchema<any>> = Omit<
     data: z.infer<TSchema>
   ) => Promise<ActionResult<z.infer<TSchema>>>;
   // This will run if action returns success: true
-  onSuccess?: (data: z.infer<TSchema>) => void;
+  onSuccess?: (data: z.infer<TSchema>, res?: any) => void;
   children:
     | React.ReactNode
     | ((methods: UseFormReturn<z.infer<TSchema>>) => React.ReactNode);
@@ -53,6 +56,7 @@ export const Form = <TSchema extends ZodSchema<any>>({
 
     // Check if serverAction is provided if not, call onSuccess directly
     if (!serverAction) {
+      // console.log("Server action not provided, calling onSuccess directly.");
       onSuccess?.(data);
       return;
     }
@@ -68,7 +72,8 @@ export const Form = <TSchema extends ZodSchema<any>>({
       return; // Stop further execution if there's an error
     }
 
-    onSuccess?.(data); // Call onSuccess if provided and action was successful
+    onSuccess?.(data, res.resultData); // Call onSuccess with data and response if serverAction is successful
+    // onSuccess?.(data); // Call onSuccess with data and response if serverAction is successful
   };
 
   return (

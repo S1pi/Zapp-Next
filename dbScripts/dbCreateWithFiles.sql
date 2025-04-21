@@ -30,6 +30,7 @@ CREATE TABLE dealerships (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
+  registration_number VARCHAR(255) NOT NULL UNIQUE,
   contact_id INT DEFAULT NULL UNIQUE,
   FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL
 );
@@ -100,4 +101,18 @@ CREATE TABLE dropoff_pictures (
   side_right_url VARCHAR(255) NOT NULL,
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE CASCADE
+);
+
+CREATE TABLE invite_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token_hash BINARY(32) NOT NULL UNIQUE, -- Assuming SHA-256 hash
+  role_to_assign ENUM('admin', 'dealer') NOT NULL,
+  created_by INT NOT NULL, -- The user who created the token
+  is_used BOOLEAN DEFAULT FALSE,
+  used_by INT DEFAULT NULL, -- The user who used the token
+  expires_at DATETIME NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE SET NULL
 );
