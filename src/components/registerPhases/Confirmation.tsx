@@ -11,7 +11,7 @@ import { z } from "zod";
 import {
   VerifyInviteActionResult,
   verifyInviteToken,
-} from "@/app/actions/tokenActions";
+} from "@/actions/tokenActions";
 
 type ConfirmationProps = {
   companyInformation: CompanyInformationType;

@@ -4,19 +4,19 @@ import {
   userInformationSchema,
   userLoginInformationSchema,
 } from "@/lib/schemas/companyInformationSchema";
-// import { ActionResult } from "next/dist/server/app-render/types";
 import { ActionResult } from "@/components/ui/Form";
 import { z } from "zod";
 import {
   checkEmailOrPhoneExists,
   createAdminOrDealer,
-  createUser,
 } from "@/models/userModel";
-import { CompanyInformationType, UserRegister } from "../auth/register/page";
 import { insertDealership } from "@/models/dealershipModel";
 import { markTokenAsUsed } from "./tokenActions";
 import promisePool from "@/lib/db";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { RowDataPacket } from "mysql2";
+import { CompanyInformationType, UserRegister } from "@/app/auth/register/page";
+import bcrypt from "bcryptjs";
+import { normalizePhoneNumber } from "@/lib/normalizePhone";
 
 type CompanyValues = z.infer<typeof companyInformationSchema>;
 type UserInfoValues = z.infer<typeof userInformationSchema>;
@@ -93,8 +93,10 @@ export async function registerActionUserLoginInfo(
   try {
     console.log("Checking if phone or email exists:", phone, email);
 
+    const normalizedPhone = normalizePhoneNumber(phone); // Normalize the phone number
+
     // Check them seperately to get the field name
-    const phoneExists = await checkEmailOrPhoneExists(null, phone);
+    const phoneExists = await checkEmailOrPhoneExists(null, normalizedPhone);
     const emailExists = await checkEmailOrPhoneExists(email, null);
 
     if (phoneExists) {
@@ -122,6 +124,8 @@ export async function registerActionUserLoginInfo(
   }
 }
 
+const saltRounds = 10; // Number of salt rounds for bcrypt hashing
+
 export async function submitRegisterAction(
   companyData: CompanyInformationType,
   userData: UserRegister,
@@ -129,12 +133,16 @@ export async function submitRegisterAction(
 ): Promise<
   ActionResult<CompanyRegister, { companyId: number; userId: number }>
 > {
+  userData.password = await bcrypt.hash(userData.password, saltRounds); // Hash the password before storing it
+
+  const normalizedPhone = normalizePhoneNumber(userData.phone); // Normalize the phone number
+
   const userSubmit = {
     email: userData.email,
     firstname: userData.firstname,
     lastname: userData.lastname,
     password: userData.password,
-    phone_number: userData.phone,
+    phone_number: normalizedPhone,
     postnumber: userData.postnumber,
     address: userData.address,
     role: userData.role,

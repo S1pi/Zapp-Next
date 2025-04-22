@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Input } from "../ui/Input";
 import { z } from "zod";
-import { registerActionCompany } from "@/app/actions/registerActions";
+import { registerActionCompany } from "@/actions/registerActions";
 import { companyInformationSchema } from "@/lib/schemas/companyInformationSchema";
 import { Form } from "../ui/Form";
 

@@ -9,8 +9,8 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { useState } from "react";
 import { UserInformation2 } from "@/components/registerPhases/UserInformation2";
 import Link from "next/link";
-import { VerifyInviteActionResult } from "@/app/actions/tokenActions";
-import { submitRegisterAction } from "@/app/actions/registerActions";
+import { VerifyInviteActionResult } from "@/actions/tokenActions";
+import { submitRegisterAction } from "@/actions/registerActions";
 import { redirect } from "next/navigation";
 // import { ActionResult } from "@/components/ui/Form";
 

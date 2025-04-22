@@ -3,9 +3,8 @@ import { userLoginInformationSchema } from "@/lib/schemas/companyInformationSche
 import { z } from "zod";
 import { Form } from "../ui/Form";
 import { Input } from "../ui/Input";
-import { FaEye } from "react-icons/fa";
 import { useState } from "react";
-import { registerActionUserLoginInfo } from "@/app/actions/registerActions";
+import { registerActionUserLoginInfo } from "@/actions/registerActions";
 
 export type UserLoginInformationFormValues = z.infer<
   typeof userLoginInformationSchema
