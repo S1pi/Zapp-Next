@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   name: string;
-  label: string;
+  label?: string;
 };
 
 export const Input = ({ name, label, ...rest }: InputProps) => {
@@ -16,7 +16,11 @@ export const Input = ({ name, label, ...rest }: InputProps) => {
 
   return (
     <div className="flex flex-col gap-2 w-full">
-      <label className="text-seabed-green font-semibold">{label}</label>
+      {label && (
+        <label className="text-seabed-green font-semibold" htmlFor={name}>
+          {label}
+        </label>
+      )}
       <input
         {...rest}
         className={`border rounded p-2 focus:ring-2 focus:outline-none ${
