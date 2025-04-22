@@ -55,14 +55,13 @@ CREATE TABLE reservations (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   car_id INT NOT NULL,
-  reservation_date DATE NOT NULL,
-  start_time TIME NOT NULL,
-  end_time TIME NOT NULL,
+  start_time TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
+  end_time TIMESTAMP DEFAULT NULL,
   active BOOLEAN DEFAULT TRUE,
   price DECIMAL(10, 2) DEFAULT 0,
   -- Check if the start_location and end_location should be used as geolocation
   start_location VARCHAR(255) NOT NULL,
-  end_location VARCHAR(255) NOT NULL,
+  end_location VARCHAR(255) DEFAULT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
   FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
 );

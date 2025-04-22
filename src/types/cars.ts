@@ -9,7 +9,7 @@ type Car = {
   location_id: number;
   latitude: number;
   longitude: number;
-  reserved: boolean;
+  is_reserved: boolean;
 };
 
 type AddCarData = {
