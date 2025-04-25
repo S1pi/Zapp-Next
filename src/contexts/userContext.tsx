@@ -8,35 +8,37 @@ import {
   useContext,
   useState,
 } from "react";
-import type { UserWithoutPassword } from "@/types/user";
+import type { UserSessionData, UserWithoutPassword } from "@/types/user";
 
-type UserContextType = {
-  user: UserWithoutPassword | null;
-  setUser: Dispatch<SetStateAction<UserWithoutPassword | null>>;
+type UserSessionContextType = {
+  userSession: UserSessionData | null;
+  setUserSession: Dispatch<SetStateAction<UserSessionData | null>>;
 };
 
-type UserProviderProps = {
-  initialUser?: UserWithoutPassword | null;
+type UserSessionProviderProps = {
+  initialSession?: UserSessionData | null;
   children: React.ReactNode;
 };
 
-const UserContext = createContext<UserContextType | null>(null);
+const UserSessionContext = createContext<UserSessionContextType | null>(null);
 
 export const UserProvider = ({
-  initialUser = null,
+  initialSession = null,
   children,
-}: UserProviderProps) => {
-  const [user, setUser] = useState<UserWithoutPassword | null>(initialUser);
+}: UserSessionProviderProps) => {
+  const [userSession, setUserSession] = useState<UserSessionData | null>(
+    initialSession
+  );
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserSessionContext.Provider value={{ userSession, setUserSession }}>
       {children}
-    </UserContext.Provider>
+    </UserSessionContext.Provider>
   );
 };
 
-export const useUser = () => {
-  const context = useContext(UserContext);
+export const useAdminSession = () => {
+  const context = useContext(UserSessionContext);
   if (context === null) {
     throw new Error("useUser must be used within a UserProvider");
   }

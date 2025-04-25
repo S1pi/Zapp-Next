@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/actions/authActions";
+import { getCurrentUser, getUserSession } from "@/actions/authActions";
 import { SideBar } from "@/components/SideBar";
 import { UserProvider } from "@/contexts/userContext";
 import { redirect } from "next/navigation";
@@ -22,11 +22,11 @@ export default async function dashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
-  if (!user) redirect("/auth/login");
+  const userSession = await getUserSession();
+  if (!userSession) redirect("/auth/login");
 
   return (
-    <UserProvider initialUser={user}>
+    <UserProvider initialSession={userSession}>
       <div className="min-h-screen flex flex-col bg-background">
         {/* Main Content with Sidebar */}
         <div className="flex flex-1">

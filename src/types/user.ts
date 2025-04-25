@@ -43,6 +43,25 @@ type DriverLicenseUrlData = Pick<
   "front_license_url" | "back_license_url"
 >;
 
+type UserSessionDataQuery = Omit<UserWithoutPassword, "validated"> & {
+  dealership_id: number;
+  dealership_name: string;
+  dealership_address: string;
+  registeration_number: string;
+  contact_id: number;
+};
+
+type UserSessionData = {
+  user: Omit<UserWithoutPassword, "validated">;
+  dealership: {
+    id: number;
+    name: string;
+    address: string;
+    registeration_number: string;
+    contact_id: number;
+  } | null;
+};
+
 export type {
   User,
   UserCreate,
@@ -52,4 +71,6 @@ export type {
   DriverLicenseUrlData,
   UserUpdate,
   LoginCredentials,
+  UserSessionDataQuery,
+  UserSessionData,
 };

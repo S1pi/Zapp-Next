@@ -2,23 +2,23 @@
 
 import { useTransition } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
-import { useUser } from "@/contexts/userContext";
+import { useAdminSession } from "@/contexts/userContext";
 import { useRouter } from "next/navigation";
 import { logOutUser } from "@/actions/authActions";
 
 export const SideBar = () => {
-  const { user } = useUser(); // Assuming you have a user context to get the current user
+  const { userSession } = useAdminSession(); // Assuming you have a user context to get the current user
   // const navigation = useNavigation(); // Assuming you have a navigation hook to get the current path
   const router = useRouter(); // Assuming you have a router hook to navigate
   const [pending, startTransition] = useTransition();
 
-  if (!user) {
+  if (!userSession) {
     // If user is not found, redirect to login page
     router.push("/auth/login");
     return null; // Render nothing while redirecting
   }
 
-  console.log("User in Sidebar:", user);
+  console.log("UserSession in Sidebar:", userSession);
 
   return (
     <>
@@ -29,7 +29,7 @@ export const SideBar = () => {
           <img src="/logo-zapp.png" alt="Logo" width="150" />
         </div>
         {/* Navigation */}
-        <DashboardNavigation user={user} />
+        <DashboardNavigation user={userSession.user} />
 
         {/* User Profile / Logout */}
         <div className="absolute bottom-4 left-4 p-2">
@@ -37,7 +37,7 @@ export const SideBar = () => {
             <div className="w-16 h-16 bg-gray-500 rounded-full"></div>
             <div>
               <p className="text-base text-primary">
-                {user.firstname} {user.lastname}
+                {userSession.user.firstname} {userSession.user.lastname}
               </p>
               <button
                 disabled={pending}
