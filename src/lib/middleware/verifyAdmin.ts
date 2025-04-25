@@ -4,6 +4,7 @@ import { verifyToken } from "@/lib/auth";
 export async function verifyAdmin(req: NextRequest) {
   console.log("Verifying admin middleware");
   const token = req.cookies.get("authToken")?.value;
+  console.log("Token in middleware:", token);
   if (!token) return NextResponse.redirect(new URL("/auth/login", req.url));
 
   try {
@@ -22,6 +23,16 @@ export async function verifyAdmin(req: NextRequest) {
     return NextResponse.next({ request: { headers: newHeaders } });
   } catch (err) {
     console.error("Error verifying admin:", err);
-    return NextResponse.redirect(new URL("/auth/login", req.url));
+    const res = NextResponse.redirect(new URL("/auth/login", req.url));
+    res.cookies.set({
+      name: "authToken",
+      value: "",
+      path: "/", // sama path
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 0, // tai expires: new Date(0)
+    });
+    return res;
   }
 }
