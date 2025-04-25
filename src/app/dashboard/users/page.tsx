@@ -1,5 +1,9 @@
+"use client";
+
+import { useAdminSession } from "@/contexts/userContext";
 import { UserWithoutPassword } from "@/types/user";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect, useTransition } from "react";
 
 // Sample data for users
 const users = [
@@ -50,12 +54,34 @@ const adminUser: UserWithoutPassword = {
   created_at: new Date().toISOString(),
 };
 
-export default function Users() {
-  const user = adminUser; // Replace with actual user data from context or props
-  const isAdmin = user.role === "admin"; // Check if the user is an admin
+export const Spinner = () => {
+  return (
+    <div className="flex justify-center items-center h-full">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-seperator-line border-t-seabed-green" />
+    </div>
+  );
+};
 
-  if (!user || !isAdmin) {
-    redirect("/dashboard");
+export default function Users() {
+  const { userSession } = useAdminSession();
+  const router = useRouter();
+
+  const user = userSession?.user; // Replace with actual user data from context or props
+  const isAdmin = user?.role === "admin"; // Check if the user is an admin
+
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    if (!user || !isAdmin) {
+      // navigointi tehdään “transitionina”
+      startTransition(() => {
+        router.push("/dashboard");
+      });
+    }
+  }, [user, isAdmin, router, startTransition]);
+
+  if (!user || !isAdmin || isPending) {
+    return <Spinner />;
   }
 
   return (
