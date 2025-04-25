@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import { useTransition } from "react";
 import { DashboardNavigation } from "./DashboardNavigation";
 import { useUser } from "@/contexts/userContext";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ export const SideBar = () => {
   const { user } = useUser(); // Assuming you have a user context to get the current user
   // const navigation = useNavigation(); // Assuming you have a navigation hook to get the current path
   const router = useRouter(); // Assuming you have a router hook to navigate
+  const [pending, startTransition] = useTransition();
 
   if (!user) {
     // If user is not found, redirect to login page
@@ -39,10 +40,15 @@ export const SideBar = () => {
                 {user.firstname} {user.lastname}
               </p>
               <button
+                disabled={pending}
                 className="text-sm text-blue-400 hover:text-aqua-gem cursor-pointer"
-                onClick={logOutUser}
+                onClick={async () => {
+                  startTransition(async () => {
+                    await logOutUser(); // Call the logout action
+                  });
+                }}
               >
-                Log out
+                {pending ? "Logging out..." : "Log out"}
               </button>
             </div>
           </div>

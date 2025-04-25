@@ -3,6 +3,7 @@
 import { verifyToken } from "@/lib/auth";
 import { getUserById } from "@/services/userService";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -26,4 +27,5 @@ export async function getCurrentUser() {
 export async function logOutUser() {
   const cookieStore = await cookies();
   cookieStore.set("authToken", "", { maxAge: -1 });
+  redirect("/auth/login");
 }
