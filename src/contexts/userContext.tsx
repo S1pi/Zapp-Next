@@ -22,7 +22,7 @@ type UserSessionProviderProps = {
 
 const UserSessionContext = createContext<UserSessionContextType | null>(null);
 
-export const UserProvider = ({
+export const UserSessionProvider = ({
   initialSession = null,
   children,
 }: UserSessionProviderProps) => {

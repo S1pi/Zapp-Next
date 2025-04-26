@@ -1,6 +1,6 @@
 import { getCurrentUser, getUserSession } from "@/actions/authActions";
 import { SideBar } from "@/components/SideBar";
-import { UserProvider } from "@/contexts/userContext";
+import { UserSessionProvider } from "@/contexts/userContext";
 import { redirect } from "next/navigation";
 
 // Mock user data for demonstration purposes
@@ -26,7 +26,7 @@ export default async function dashboardLayout({
   if (!userSession) redirect("/auth/login");
 
   return (
-    <UserProvider initialSession={userSession}>
+    <UserSessionProvider initialSession={userSession}>
       <div className="min-h-screen flex flex-col bg-background">
         {/* Main Content with Sidebar */}
         <div className="flex flex-1">
@@ -37,6 +37,6 @@ export default async function dashboardLayout({
           <main className="flex-1 p-6 bg-primary">{children}</main>
         </div>
       </div>
-    </UserProvider>
+    </UserSessionProvider>
   );
 }
