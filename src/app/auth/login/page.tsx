@@ -56,6 +56,8 @@ export default function LoginPage() {
           validationSchema={loginSchema}
           className="flex flex-col gap-8 max-w-sm w-full flex-2 justify-center text"
           serverAction={loginAction}
+          // data-id="login-form" // Added data attribute for the form
+
           onSuccess={handleSuccess}
         >
           <Input
@@ -63,6 +65,8 @@ export default function LoginPage() {
             placeholder="Sähköposti tai puhelin"
             name="email_or_phone"
             className="border text-secondary border-card-stroke rounded-2xl p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none placeholder:text-black-zapp placeholder:opacity-50"
+            // data-id="email-input" // Added data attribute for email input
+
           />
 
           <Input
@@ -70,11 +74,15 @@ export default function LoginPage() {
             placeholder="Salasana"
             name="password"
             className="border text-secondary border-card-stroke rounded-2xl p-2 focus:ring-2 focus:ring-seabed-green focus:outline-none placeholder:text-black-zapp placeholder:opacity-50"
+            // data-id="password-input" // Added data attribute for password input
+
           />
 
           <button
             type="submit"
             className="bg-secondary text-white rounded-2xl p-2 hover:bg-black-zapp transition duration-300 ease-in-out cursor-pointer"
+            // data-id="login-button" // Added data attribute for the submit button
+
           >
             Kirjaudu
           </button>
