@@ -7,7 +7,7 @@ type User = {
   phone_number: string;
   postnumber: string;
   address: string;
-  validated: boolean;
+  is_validated: boolean;
   role: string;
   created_at: Date | string;
 };
@@ -19,14 +19,14 @@ type LoginCredentials = {
   password: string;
 };
 
-type UserCreate = Omit<User, "id" | "created_at" | "validated" | "role">;
+type UserCreate = Omit<User, "id" | "created_at" | "is_validated" | "role">;
 
 type UserUpdate = Omit<
   UserWithoutPassword,
-  "id" | "created_at" | "validated" | "role"
+  "id" | "created_at" | "is_validated" | "role"
 >;
 
-type TokenData = Pick<User, "id" | "validated" | "role">;
+type TokenData = Pick<User, "id" | "is_validated" | "role">;
 
 type DriverLicenseData = {
   id: number;
@@ -43,7 +43,7 @@ type DriverLicenseUrlData = Pick<
   "front_license_url" | "back_license_url"
 >;
 
-type UserSessionDataQuery = Omit<UserWithoutPassword, "validated"> & {
+type UserSessionDataQuery = Omit<UserWithoutPassword, "is_validated"> & {
   dealership_id: number;
   dealership_name: string;
   dealership_address: string;
@@ -52,7 +52,7 @@ type UserSessionDataQuery = Omit<UserWithoutPassword, "validated"> & {
 };
 
 type UserSessionData = {
-  user: Omit<UserWithoutPassword, "validated">;
+  user: Omit<UserWithoutPassword, "is_validated">;
   dealership: {
     id: number;
     name: string;

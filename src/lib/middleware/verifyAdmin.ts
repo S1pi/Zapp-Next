@@ -8,7 +8,7 @@ export async function verifyAdmin(req: NextRequest) {
   if (!token) return NextResponse.redirect(new URL("/auth/login", req.url));
 
   try {
-    const { id, role, validated } = await verifyToken(token);
+    const { id, role, is_validated } = await verifyToken(token);
 
     if (!["admin", "dealer"].includes(role)) {
       // Check how this should be handled in the middleware
@@ -19,7 +19,7 @@ export async function verifyAdmin(req: NextRequest) {
     const newHeaders = new Headers(req.headers);
     newHeaders.set("X-User-Id", String(id));
     newHeaders.set("X-User-Role", role);
-    newHeaders.set("X-User-Validated", String(validated));
+    newHeaders.set("X-User-Validated", String(is_validated));
     return NextResponse.next({ request: { headers: newHeaders } });
   } catch (err) {
     console.error("Error verifying admin:", err);

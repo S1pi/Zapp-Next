@@ -81,7 +81,7 @@ export async function verifyApi(
   }
 
   try {
-    const { id, role, validated } = await verifyToken(authToken);
+    const { id, role, is_validated } = await verifyToken(authToken);
 
     // if (!id || !role) {
     //   return NextResponse.json(
@@ -93,7 +93,7 @@ export async function verifyApi(
     const newHeaders = new Headers(req.headers);
     newHeaders.set("X-User-Id", String(id));
     newHeaders.set("X-User-Role", role);
-    newHeaders.set("X-User-Validated", String(validated));
+    newHeaders.set("X-User-Validated", String(is_validated));
 
     return NextResponse.next({
       request: {

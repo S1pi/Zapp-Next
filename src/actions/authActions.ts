@@ -17,7 +17,7 @@ export async function getCurrentUser() {
     return null;
   }
   try {
-    const { id, role, validated } = await verifyToken(token);
+    const { id, role, is_validated } = await verifyToken(token);
 
     const user = await getUserById(id);
 
@@ -70,11 +70,11 @@ export const getSessionData = async (userId: number) => {
   return sessionData;
 };
 
-export const invalidateSession = async () => {
-  const cookieStore = await cookies();
-  cookieStore.set("authToken", "", { maxAge: -1 });
-  redirect("/auth/login");
-};
+// export const invalidateSession = async () => {
+//   const cookieStore = await cookies();
+//   cookieStore.set("authToken", "", { maxAge: -1 });
+//   redirect("/auth/login");
+// };
 
 export async function getUserSession(): Promise<UserSessionData | null> {
   const cookieStore = await cookies();
