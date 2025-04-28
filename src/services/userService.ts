@@ -12,10 +12,13 @@ import {
   updateUserRole,
   updateUser,
 } from "@/models/userModel";
+import { DealershipInputData } from "@/types/dealership";
 import { CreatedUserSuccessResponse } from "@/types/responses";
 import { TokenData, UserCreate, UserUpdate } from "@/types/user";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
+import { createDealership } from "./dealershipService";
+// import * as userModel from "@/models/userModel";
 
 const saltRounds = 10;
 
@@ -37,6 +40,22 @@ const createJWT = async (tokenData: TokenData): Promise<string> => {
     .sign(secret);
 
   return token;
+};
+
+const createDealer = async (
+  userData: UserCreate,
+  companyData: DealershipInputData
+) => {
+  try {
+    const userId = await createUser(userData);
+
+    const createDealershipData = {
+      ...companyData,
+      contact_id: userId,
+    };
+
+    const dealershipId = await createDealership(createDealershipData);
+  } catch (err) {}
 };
 
 const userRegister = async (

@@ -6,10 +6,11 @@ const insertDealership = async (
   dealershipData: DealershipCreate
 ): Promise<number> => {
   const sql =
-    "INSERT INTO dealerships (name, address, contact_id) VALUES (?, ?, ?)";
+    "INSERT INTO dealerships (name, address, registeration_number, contact_id) VALUES (?, ?, ?, ?)";
   const values = [
     dealershipData.name,
     dealershipData.address,
+    dealershipData.registeration_number,
     dealershipData.contact_id,
   ];
   const [result] = await dbConnection.execute<ResultSetHeader>(sql, values);

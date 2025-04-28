@@ -48,6 +48,29 @@ const createUser = async (userData: UserCreate): Promise<number> => {
   return result.insertId;
 };
 
+const createAdminOrDealer = async (userData: UserCreate & { role: string }) => {
+  const sql =
+    "INSERT INTO users (email, firstname, lastname, password, phone_number, postnumber, address, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+  const values = [
+    userData.email,
+    userData.firstname,
+    userData.lastname,
+    userData.password,
+    userData.phone_number,
+    userData.postnumber,
+    userData.address,
+    userData.role,
+  ];
+
+  const [result] = await promisePool.execute<ResultSetHeader>(sql, values);
+
+  if (result.affectedRows === 0) {
+    throw new Error("User could not be created");
+  }
+  return result.insertId;
+};
+
 const getUserByEmailOrPhone = async (emailOrPhone: string): Promise<User> => {
   const query =
     "SELECT * FROM users WHERE email = ? OR phone_number = ? LIMIT 1";
@@ -122,18 +145,25 @@ const checkEmailOrPhoneExists = async (
     );
   }
 
+  // console.log("Checking for existing email or phone:", email, phone);
+
   const query = `SELECT COUNT(*) as count FROM users WHERE ${
     email ? "email = ?" : ""
   } ${phone ? (email ? "OR" : "") + " phone_number = ?" : ""}`;
   const values = [email, phone].filter(Boolean);
 
+  console.log("Executing query:", query, "with values:", values);
+
   const [rows] = await promisePool.query<RowDataPacket[]>(query, values);
+
+  console.log("Query result:", rows);
   return rows[0].count > 0;
 };
 
 export {
   getUserById,
   createUser,
+  createAdminOrDealer,
   getUserByEmailOrPhone,
   updateUserRole,
   checkEmailOrPhoneExists,
