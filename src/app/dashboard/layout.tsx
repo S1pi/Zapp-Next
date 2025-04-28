@@ -1,4 +1,8 @@
-import { getCurrentUser, getUserSession } from "@/actions/authActions";
+import {
+  getCurrentUser,
+  getUserSession,
+  invalidateSession,
+} from "@/actions/authActions";
 import { SideBar } from "@/components/SideBar";
 import { UserSessionProvider } from "@/contexts/userContext";
 import { redirect } from "next/navigation";
@@ -22,8 +26,13 @@ export default async function dashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // const [userSession, setUserSession] = useState
+
   const userSession = await getUserSession();
-  if (!userSession) redirect("/auth/login");
+
+  if (!userSession) {
+    redirect("/api/logout");
+  }
 
   return (
     <UserSessionProvider initialSession={userSession}>

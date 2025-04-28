@@ -7,6 +7,7 @@ import { UserSessionData, UserSessionDataQuery } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { NextResponse } from "next/server";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -27,7 +28,7 @@ export async function getCurrentUser() {
   }
 }
 
-const getSessionData = async (userId: number) => {
+export const getSessionData = async (userId: number) => {
   const sql = `SELECT u.id, u.firstname, u.lastname, u.email, u.phone_number, u.postnumber,
                       u.address, u.role, u.created_at, d.id AS dealership_id, d.name AS dealership_name,
                       d.address AS dealership_address, d.registeration_number, d.contact_id
@@ -69,6 +70,12 @@ const getSessionData = async (userId: number) => {
   return sessionData;
 };
 
+export const invalidateSession = async () => {
+  const cookieStore = await cookies();
+  cookieStore.set("authToken", "", { maxAge: -1 });
+  redirect("/auth/login");
+};
+
 export async function getUserSession(): Promise<UserSessionData | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
@@ -85,16 +92,10 @@ export async function getUserSession(): Promise<UserSessionData | null> {
 
     const sessionData = await getSessionData(id);
 
-    if (!sessionData) {
-      cookieStore.set("authToken", "", { maxAge: -1 });
-      redirect("/auth/login");
-    }
-
-    return sessionData;
+    return sessionData && sessionData.user.role === role ? sessionData : null;
   } catch (err) {
     console.error("Error verifying token in getUserSession:", err);
-    cookieStore.set("authToken", "", { maxAge: -1 });
-    redirect("/auth/login");
+    return null;
   }
 }
 

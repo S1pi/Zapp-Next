@@ -1,6 +1,7 @@
 "use client";
 
 import { useAdminSession } from "@/contexts/userContext";
+import useAuthentication from "@/hooks/useAuthentication";
 import { UserWithoutPassword } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { useEffect, useTransition } from "react";
@@ -40,19 +41,19 @@ const users = [
 ];
 
 // mock user data for demonstration purposes
-const adminUser: UserWithoutPassword = {
-  id: 1,
-  email: "dwad@daw.fo",
-  firstname: "Admin",
-  lastname: "User",
-  phone_number: "123456789",
-  postnumber: "1234",
-  address: "Admin Street 1",
-  validated: true,
-  role: "admin",
-  // role: "dealer",
-  created_at: new Date().toISOString(),
-};
+// const adminUser: UserWithoutPassword = {
+//   id: 1,
+//   email: "dwad@daw.fo",
+//   firstname: "Admin",
+//   lastname: "User",
+//   phone_number: "123456789",
+//   postnumber: "1234",
+//   address: "Admin Street 1",
+//   validated: true,
+//   role: "admin",
+//   // role: "dealer",
+//   created_at: new Date().toISOString(),
+// };
 
 export const Spinner = () => {
   return (
@@ -63,11 +64,12 @@ export const Spinner = () => {
 };
 
 export default function Users() {
+  // const { isAdmin } = useAuthentication();
   const { userSession } = useAdminSession();
+  // const { isAdmin } = useAuthentication(); // Check if the user is an admin
+  const isAdmin = userSession?.user.role === "admin"; // Check if the user is an admin
   const router = useRouter();
-
-  const user = userSession?.user; // Replace with actual user data from context or props
-  const isAdmin = user?.role === "admin"; // Check if the user is an admin
+  const user = userSession?.user; // Get the user from the session
 
   const [isPending, startTransition] = useTransition();
 

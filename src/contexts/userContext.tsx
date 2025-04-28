@@ -6,6 +6,7 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import type { UserSessionData, UserWithoutPassword } from "@/types/user";
