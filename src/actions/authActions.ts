@@ -7,7 +7,6 @@ import { UserSessionData, UserSessionDataQuery } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -76,6 +75,7 @@ export const getSessionData = async (userId: number) => {
 //   redirect("/auth/login");
 // };
 
+// This is not a server action, this is a server helper function
 export async function getUserSession(): Promise<UserSessionData | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value;
@@ -99,6 +99,7 @@ export async function getUserSession(): Promise<UserSessionData | null> {
   }
 }
 
+// This is a server action
 export async function logOutUser() {
   const cookieStore = await cookies();
   cookieStore.set("authToken", "", { maxAge: -1 });

@@ -1,8 +1,4 @@
-import {
-  getCurrentUser,
-  getUserSession,
-  invalidateSession,
-} from "@/actions/authActions";
+import { getUserSession } from "@/actions/authActions";
 import { SideBar } from "@/components/SideBar";
 import { UserSessionProvider } from "@/contexts/userContext";
 import { redirect } from "next/navigation";
