@@ -2,8 +2,10 @@ import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
+  ValidationError,
 } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
+import { errorToResponse } from "@/lib/middleware/errorToResponse";
 import { validateRequest } from "@/lib/middleware/validateRequest";
 import { userLogin } from "@/services/userService";
 import { LoginResponse } from "@/types/responses";
@@ -34,7 +36,6 @@ export async function POST(req: NextRequest) {
   console.log("Request method:", req.method);
   try {
     const user = await validateRequest<LoginCredentials>(req, UserSchema);
-    if (user instanceof NextResponse) return user;
 
     let { email_or_phone, password } = user;
 
@@ -52,39 +53,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(loginResponse, { status: 200 });
   } catch (err) {
-    console.log("Error in login route", err);
-    if (err instanceof NotFoundError) {
-      // Check if this should return 401 instead of 404 if user is not found for security reasons
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: err.statusCode }
-      );
-    }
-
-    if (err instanceof UnauthorizedError) {
-      return NextResponse.json(
-        { error: err.message },
-        { status: err.statusCode }
-      );
-    }
-
-    if (err instanceof ForbiddenError) {
-      return NextResponse.json(
-        { error: err.message },
-        { status: err.statusCode }
-      );
-    }
-
-    if (err instanceof SyntaxError) {
-      return NextResponse.json(
-        { error: "Invalid JSON format" },
-        { status: 400 }
-      );
-    }
-
-    return NextResponse.json(
-      { error: "Internal server error: " + (err as Error).message },
-      { status: 500 }
-    );
+    const error = errorToResponse(err);
+    return error;
   }
 }

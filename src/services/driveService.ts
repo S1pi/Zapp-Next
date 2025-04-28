@@ -1,4 +1,9 @@
-import { NotFoundError } from "@/lib/customErrors";
+import {
+  DuplicateEntryError,
+  ForbiddenError,
+  MissingDataError,
+  NotFoundError,
+} from "@/lib/customErrors";
 import { saveFile } from "@/lib/saveFile";
 import {
   selectCarById,
@@ -11,12 +16,19 @@ import {
   getDriveById,
 } from "@/models/driveModel";
 import { insertDropOffPics } from "@/models/dropOffModel";
+import { getUserValidation } from "@/models/userModel";
 
 const driveStart = async (userId: number, carId: number) => {
   try {
+    const validated = await getUserValidation(userId);
+    if (!validated) {
+      throw new ForbiddenError("User not validated");
+    }
+
     const car = await selectCarById(carId);
-    if (!car) throw new Error("Car not found");
-    if (car.is_reserved) throw new Error("Car is already reserved");
+    if (!car) throw new NotFoundError("Car not found");
+    if (car.is_reserved)
+      throw new DuplicateEntryError("Car is already reserved");
 
     await updateCarStatus(carId, true);
     const location = car.longitude + "," + car.latitude;
@@ -32,8 +44,15 @@ const driveStart = async (userId: number, carId: number) => {
       driveId: driveStart,
     };
   } catch (err) {
+    console.log(err);
     if (err instanceof NotFoundError) {
       throw new NotFoundError(err.message);
+    }
+    if (err instanceof DuplicateEntryError) {
+      throw new DuplicateEntryError(err.message);
+    }
+    if (err instanceof ForbiddenError) {
+      throw new ForbiddenError(err.message);
     }
     console.log(err);
     throw new Error("Drive could not be started");
@@ -41,6 +60,7 @@ const driveStart = async (userId: number, carId: number) => {
 };
 
 const driveEnd = async (
+  userId: number,
   driveId: number,
   endLocation: string,
   front: File,
@@ -51,13 +71,17 @@ const driveEnd = async (
   try {
     const drive = await getDriveById(driveId);
     if (!drive) {
-      throw new Error("Drive not found");
+      throw new NotFoundError("Drive not found");
     }
+    if (drive.user_id !== userId) {
+      throw new ForbiddenError("User not authorized to end this drive");
+    }
+
     const endTime = new Date();
     console.log("Drive end time:", endTime);
     console.log("Drive start time:", drive.start_time);
 
-    const driveEnd = await insertDriveEnd({
+    await insertDriveEnd({
       drive_id: driveId,
       end_location: endLocation,
       end_time: endTime,
@@ -68,7 +92,7 @@ const driveEnd = async (
     await updateCarStatus(drive.car_id, false);
 
     if (!drive.active) {
-      throw new Error("Drive is already ended");
+      throw new DuplicateEntryError("Drive is already ended");
     }
 
     const frontUrl = await saveFile({
@@ -93,7 +117,7 @@ const driveEnd = async (
       !leftUrl.fileUrl ||
       !rightUrl.fileUrl
     ) {
-      throw new Error("Drop-off pictures url could not be created");
+      throw new MissingDataError("Drop-off pictures url could not be created");
     }
     const dropOffPics = await insertDropOffPics(driveId, {
       front_url: frontUrl.fileUrl,
@@ -124,12 +148,19 @@ const driveEnd = async (
     };
   } catch (err) {
     console.log(err);
-    if ((err as any).code === "ER_NO_REFERENCED_ROW_2") {
-      throw new Error("Linked drive not found");
+    if (err instanceof NotFoundError) {
+      throw new NotFoundError(err.message);
     }
-    if ((err as any).message === "Drive is already ended") {
-      throw new NotFoundError("Drive is already ended");
+    if (err instanceof DuplicateEntryError) {
+      throw new DuplicateEntryError(err.message);
     }
+    if (err instanceof MissingDataError) {
+      throw new MissingDataError(err.message);
+    }
+    if (err instanceof ForbiddenError) {
+      throw new ForbiddenError(err.message);
+    }
+    console.log(err);
     throw new Error("Drive could not be ended");
   }
 };

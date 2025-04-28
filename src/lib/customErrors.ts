@@ -69,3 +69,16 @@ export class MissingDataError extends Error {
     Object.setPrototypeOf(this, MissingDataError.prototype);
   }
 }
+
+export class ValidationError extends Error {
+  statusCode: number;
+  errors: any;
+
+  constructor(message: string, errors: any, statusCode = 400) {
+    super(message);
+    this.statusCode = statusCode;
+    this.errors = errors;
+    this.name = "ValidationError";
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}

@@ -11,5 +11,6 @@ const middlewareConfig: MiddlewareMap = {
   "/api/users/modify": [verifyToken],
   "/api/securefiles": [verifyToken],
   "/api/parking-zones/add": [verifyToken],
+  "/api/drive": [verifyToken],
 };
 export default middlewareConfig;
