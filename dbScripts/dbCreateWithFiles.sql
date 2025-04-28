@@ -30,7 +30,7 @@ CREATE TABLE dealerships (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   address VARCHAR(255) NOT NULL,
-  registration_number VARCHAR(255) NOT NULL UNIQUE,
+  registeration_number VARCHAR(255) NOT NULL UNIQUE,
   contact_id INT DEFAULT NULL UNIQUE,
   FOREIGN KEY (contact_id) REFERENCES users(id) ON DELETE SET NULL
 );
