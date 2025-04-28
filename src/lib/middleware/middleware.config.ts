@@ -11,10 +11,10 @@ const middlewareConfig: MiddlewareMap = {
   "/api/dealership": [verifyApi],
   "/api/cars": [verifyApi],
   "/api/users/modify": [verifyApi],
-  "/api/securefiles": [verifyApi],
   "/api/parking-zones/add": [verifyApi],
   "/api/drive": [verifyApi],
   // Next.js Routes
   "/dashboard": [verifyAdmin],
+  "/api/securefiles": [verifyAdmin],
 };
 export default middlewareConfig;
