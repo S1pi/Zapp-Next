@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const userRole = req.headers.get("X-User-Role");
 
+  console.log("User role:", userRole);
+
   if (userRole !== "admin") {
     return new Response("Unauthorized", { status: 401 });
   }
