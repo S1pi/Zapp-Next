@@ -1,18 +1,24 @@
 // import { useFormContext } from "react-hook-form";
 // "use client";
 
-import { useFormContext } from "react-hook-form";
+import { RegisterOptions, useFormContext } from "react-hook-form";
 
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   name: string;
   label?: string;
 };
 
-export const Input = ({ name, label, ...rest }: InputProps) => {
+export const Input = ({ name, label, type, ...rest }: InputProps) => {
   const {
     register,
     formState: { errors },
   } = useFormContext();
+
+  const registerOptions: RegisterOptions = {};
+
+  if (type === "date") {
+    registerOptions.valueAsDate = true;
+  }
 
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -23,6 +29,7 @@ export const Input = ({ name, label, ...rest }: InputProps) => {
       )}
       <input
         {...rest}
+        type={type}
         className={`border rounded p-2 focus:ring-2 focus:outline-none ${
           rest.className
         }
@@ -32,7 +39,7 @@ export const Input = ({ name, label, ...rest }: InputProps) => {
               : "border-black-zapp focus:ring-seabed-green"
           }
         `}
-        {...register(name)}
+        {...register(name, registerOptions)}
         aria-invalid={!!errors[name]}
         aria-describedby={errors[name] ? `${name}-error` : undefined}
       />
