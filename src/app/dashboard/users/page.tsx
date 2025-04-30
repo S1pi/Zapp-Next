@@ -39,6 +39,32 @@ export default function Users() {
   ); // State to hold the selected user for the modal
   const [showUserDetails, setShowUserDetails] = useState(false); // State to control the visibility of the user details
 
+  const fetchUsers = async () => {
+    try {
+      const response = await getAllUsers();
+      const validatedUsers = response.filter((user) => user.is_validated);
+      const pendingUsers = response.filter((user) => !user.is_validated);
+
+      const dealersAndAdmins = response
+        .filter((user) => user.role === "dealer" || user.role === "admin")
+        .sort((a, b) => {
+          const order: Record<string, number> = { dealer: 0, admin: 1 };
+          return (order[a.role] || 0) - (order[b.role] || 0);
+        });
+      setDealersAndAdmin(dealersAndAdmins); // Set the dealers and admins state
+      setValidatedUsers(validatedUsers); // Set the validated users state
+      setPendingUsers(pendingUsers); // Set the pending users state
+
+      // setUsers(response); // Set the users state with the fetched data
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleValidation = () => {
+    fetchUsers(); // Fetch users again after validation
+  };
+
   useEffect(() => {
     if (!user || !isAdmin) {
       // navigointi tehdään “transitionina”
@@ -47,28 +73,7 @@ export default function Users() {
       });
     }
 
-    const fetchUsers = async () => {
-      try {
-        const response = await getAllUsers();
-        const validatedUsers = response.filter((user) => user.is_validated);
-        const pendingUsers = response.filter((user) => !user.is_validated);
-
-        const dealersAndAdmins = response
-          .filter((user) => user.role === "dealer" || user.role === "admin")
-          .sort((a, b) => {
-            const order: Record<string, number> = { dealer: 0, admin: 1 };
-            return (order[a.role] || 0) - (order[b.role] || 0);
-          });
-        setDealersAndAdmin(dealersAndAdmins); // Set the dealers and admins state
-        setValidatedUsers(validatedUsers); // Set the validated users state
-        setPendingUsers(pendingUsers); // Set the pending users state
-
-        // setUsers(response); // Set the users state with the fetched data
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-    console.log("view", view);
+    // console.log("view", view);
     fetchUsers();
   }, [user, isAdmin, router, startTransition, view]);
 
@@ -155,7 +160,11 @@ export default function Users() {
       {/* User Details Modal */}
 
       {showUserDetails && (
-        <UserModal user={selectedUser} setShowUser={setShowUserDetails} />
+        <UserModal
+          user={selectedUser}
+          setShowUser={setShowUserDetails}
+          onSuccess={handleValidation}
+        />
       )}
     </div>
   );

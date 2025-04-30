@@ -1,6 +1,11 @@
 "use server";
 
+import { ActionResult } from "@/components/ui/Form";
 import promisePool from "@/lib/db";
+import {
+  DrivingLicenseValidationSchema,
+  DrivingLicenseValues,
+} from "@/lib/schemas/expiryDateSchema";
 import { DriverLicenseUrlData, UserWithoutPassword } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 
@@ -30,22 +35,166 @@ export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   return rows;
 }
 
-export async function getDrivingLicenseByUserId(
-  userId: number
-): Promise<{ front_license_url: string; back_license_url: string }> {
+export async function getDrivingLicenseByUserId(userId: number): Promise<{
+  id: number;
+  front_license_url: string;
+  back_license_url: string;
+}> {
   // const { isAdmin } = useAuthentication();
   // if (await isAdmin()) {
   //   throw new Error("Unauthorized access");
   // }
 
-  const sql = `SELECT front_license_url, back_license_url FROM driving_licenses WHERE user_id = ?`;
+  const sql = `SELECT id, front_license_url, back_license_url FROM driving_licenses WHERE user_id = ?`;
   const values = [userId];
   const [rows] = await promisePool.query<
-    RowDataPacket[] & DriverLicenseUrlData[]
+    RowDataPacket[] & DriverLicenseUrlData[] & { id: number }[]
   >(sql, values);
   const drivingLicense = rows[0];
   if (!drivingLicense) {
     throw new Error("No driving license found for this user");
   }
+
+  console.log("Driving license data:", drivingLicense);
+
   return drivingLicense;
+}
+
+// export async function updateDrivingLicenseValidationStatus(
+//   userId: number,
+//   isValidated: boolean
+// ): Promise<void> {
+//   const sql = `UPDATE users SET is_validated = ? WHERE id = ?`;
+//   const values = [isValidated, userId];
+//   await promisePool.query(sql, values);
+// }
+
+// export async function updateDrivingLicenseExpiryDate(
+//   userId: number,
+//   expiryDate: Date,
+//   drivingLicenseId: string
+// ): Promise<void> {
+//   const sql = `UPDATE driving_licenses SET expiry_date = ? WHERE user_id = ? AND driving_license_id = ?`;
+//   const values = [expiryDate, userId, drivingLicenseId];
+//   await promisePool.query(sql, values);
+// }
+
+export async function validateDrivingLicense(
+  userId: number,
+  expiry_date: Date,
+  isValidated: boolean
+): Promise<void> {
+  const connection = await promisePool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const sql = `UPDATE users u 
+               JOIN driving_licenses d on d.user_id = u.id
+               SET u.is_validated = ?, d.expiry_date = ?, d.is_verified = ?
+               WHERE u.id = ?
+               `;
+    const values = [isValidated, expiry_date, isValidated, userId];
+    await promisePool.execute(sql, values);
+    await connection.commit();
+  } catch (error) {
+    console.error("Error validating driving license:", error);
+    await connection.rollback();
+    throw error; // Rethrow the error to be handled by the caller
+  } finally {
+    connection.release();
+  }
+}
+
+export async function denyDrivingLicense(
+  userId: number,
+  drivingLicenseId: number
+): Promise<void> {
+  const connection = await promisePool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const sql = `DELETE FROM driving_licenses WHERE user_id = ? AND id = ?`;
+    const values = [userId, drivingLicenseId];
+    await promisePool.execute(sql, values);
+    await connection.commit();
+  } catch (error) {
+    console.error("Error denying driving license:", error);
+    await connection.rollback();
+    throw error; // Rethrow the error to be handled by the caller
+  } finally {
+    connection.release();
+  }
+}
+
+// type DrivingLicenseValidationData = {
+//   userId: number;
+//   drivingLicenseId: number;
+//   validationStatus: string;
+// };
+
+type DrivingLicenseValidationPayload = {
+  userId: number;
+  drivingLicenseId: number;
+  expiryDate: Date;
+  validationStatus: "validated" | "denied";
+};
+
+export async function drivingLicenseValidation(
+  data: DrivingLicenseValidationPayload
+): Promise<ActionResult<DrivingLicenseValues>> {
+  console.log(
+    "Server action called inside drivingLicenseValidation with data:",
+    data
+  );
+
+  try {
+    const parsedData = DrivingLicenseValidationSchema.safeParse(data);
+    if (!parsedData.success) {
+      const issue = parsedData.error.issues[0];
+      const field = issue.path[0] as keyof DrivingLicenseValues; // Get the field name from the error path
+
+      return {
+        success: false,
+        field,
+        message: issue.message,
+      };
+    }
+
+    const { userId, drivingLicenseId, expiryDate, validationStatus } = data;
+
+    if (!userId || userId === 0 || !drivingLicenseId) {
+      return {
+        success: false,
+        message:
+          "User ID and Driving License ID are required and must be valid",
+      };
+    }
+
+    if (validationStatus === "validated") {
+      await validateDrivingLicense(userId, expiryDate, true);
+      return {
+        success: true,
+        message: "Driving license validated successfully",
+      };
+    }
+
+    if (validationStatus === "denied") {
+      await denyDrivingLicense(userId, drivingLicenseId);
+      return {
+        success: true,
+        message: "Driving license denied successfully",
+      };
+    }
+
+    return {
+      success: false,
+      message: "Invalid validation status",
+    };
+  } catch (err) {
+    console.error("Error validating driving license:", err);
+    return {
+      success: false,
+      message: "Error validating driving license",
+    };
+  }
 }
