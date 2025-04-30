@@ -11,4 +11,15 @@ type FileBase = {
 };
 
 type CarShowcaseUpload = Omit<FileBase, "id" | "uploaded_at">;
-export type { FileBase, CarShowcaseUpload };
+
+type DrivingLicenseData = {
+  id: number;
+  user_id: number;
+  front_license_url: string;
+  back_license_url: string;
+  is_verified: boolean;
+  expiry_date: Date;
+  uploaded_at: Date;
+};
+
+export type { FileBase, CarShowcaseUpload, DrivingLicenseData };

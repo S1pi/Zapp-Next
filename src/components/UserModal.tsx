@@ -1,5 +1,7 @@
+import { getDrivingLicenseByUserId } from "@/actions/dashboardActions";
 import stringifyDate from "@/lib/helpers";
 import { UserWithoutPassword } from "@/types/user";
+import { useEffect, useState } from "react";
 
 type UserModalProps = {
   user: UserWithoutPassword | null;
@@ -8,6 +10,24 @@ type UserModalProps = {
 
 export const UserModal = ({ user, setShowUser }: UserModalProps) => {
   if (!user) return null; // Return null if no user is selected
+
+  const [backUrl, setBackUrl] = useState<string | null>(null); // State to hold the back URL
+  const [frontUrl, setFrontUrl] = useState<string | null>(null); // State to hold the front URL
+
+  useEffect(() => {
+    const fetchDrivingLicense = async () => {
+      try {
+        const response = await getDrivingLicenseByUserId(user.id);
+        setBackUrl(response.back_license_url); // Set the back URL
+        setFrontUrl(response.front_license_url); // Set the front URL
+      } catch (error) {
+        console.error("Error fetching driving license:", error);
+        setBackUrl(null); // Reset the back URL on error
+        setFrontUrl(null); // Reset the front URL on error
+      }
+    };
+    fetchDrivingLicense(); // Fetch the driving license data
+  }, [user]); // Effect to run when the user changes
 
   const validatedUser = user.is_validated ? "Yes" : "No"; // Check if the user is validated
 
@@ -50,7 +70,7 @@ export const UserModal = ({ user, setShowUser }: UserModalProps) => {
                 <div>
                   <p>Frontside:</p>
                   <img
-                    src="/api/securefiles?fileurl=/secure_uploads/licenses/license_back-1744329556546.jpg"
+                    src={`/api/securefiles?fileurl=${frontUrl}`}
                     alt=""
                     className="w-70 h-50"
                   />
@@ -58,7 +78,7 @@ export const UserModal = ({ user, setShowUser }: UserModalProps) => {
                 <div>
                   <p>Backside:</p>
                   <img
-                    src="/uploads/cars/car_showcase-1744299718165.jpg"
+                    src={`/api/securefiles?fileurl=${backUrl}`}
                     alt=""
                     className="w-70 h-50"
                   />
