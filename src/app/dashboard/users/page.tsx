@@ -1,6 +1,7 @@
 "use client";
 
 import { getAllUsers } from "@/actions/dashboardActions";
+import { Spinner } from "@/components/Spinner";
 import { UserList } from "@/components/UserList";
 import { UserModal } from "@/components/UserModal";
 import { useAdminSession } from "@/contexts/userContext";
@@ -8,13 +9,13 @@ import { UserWithoutPassword } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
-export const Spinner = () => {
-  return (
-    <div className="flex justify-center items-center h-full">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-seperator-line border-t-seabed-green" />
-    </div>
-  );
-};
+// export const Spinner = () => {
+//   return (
+//     <div className="flex justify-center items-center h-full">
+//       <div className="animate-spin rounded-full h-12 w-12 border-4 border-seperator-line border-t-seabed-green" />
+//     </div>
+//   );
+// };
 
 export default function Users() {
   // const { isAdmin } = useAuthentication();

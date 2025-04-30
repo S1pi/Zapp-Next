@@ -2,6 +2,8 @@ import { getDrivingLicenseByUserId } from "@/actions/dashboardActions";
 import stringifyDate from "@/lib/helpers";
 import { UserWithoutPassword } from "@/types/user";
 import { useEffect, useState } from "react";
+import { Spinner } from "./Spinner";
+import Image from "next/image";
 
 type UserModalProps = {
   user: UserWithoutPassword | null;
@@ -9,31 +11,39 @@ type UserModalProps = {
 };
 
 export const UserModal = ({ user, setShowUser }: UserModalProps) => {
-  if (!user) return null; // Return null if no user is selected
-
   const [backUrl, setBackUrl] = useState<string | null>(null); // State to hold the back URL
   const [frontUrl, setFrontUrl] = useState<string | null>(null); // State to hold the front URL
+  // const [pending, startTransition] = useTransition(); // Transition state for pending actions];
+  const [isLoading, setIsLoading] = useState(false); // State to control loading spinner
+  // if (!user) return null; // Return null if no user is selected
 
   useEffect(() => {
     const fetchDrivingLicense = async () => {
       try {
+        setIsLoading(true); // Set loading state to true
+        if (!user) return null; // Return null if no user is selected
+
         const response = await getDrivingLicenseByUserId(user.id);
         setBackUrl(response.back_license_url); // Set the back URL
         setFrontUrl(response.front_license_url); // Set the front URL
+        setIsLoading(false); // Set loading state to false
       } catch (error) {
         console.error("Error fetching driving license:", error);
         setBackUrl(null); // Reset the back URL on error
         setFrontUrl(null); // Reset the front URL on error
+        setIsLoading(false); // Set loading state to false
       }
     };
     fetchDrivingLicense(); // Fetch the driving license data
   }, [user]); // Effect to run when the user changes
 
+  if (!user) return null; // Return null if no user is selected
+
   const validatedUser = user.is_validated ? "Yes" : "No"; // Check if the user is validated
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black-zapp/50">
-      <div className="bg-primary p-6 rounded shadow-lg w-1/3 h-3/4 border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
+      <div className="bg-primary p-6 rounded shadow-lg w-1/2 border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
         <h1 className="font-bold mb-4 text-seabed-green">User Details</h1>
         {/* User details go here */}
         <div className="mb-4 text-secondary w-full">
@@ -64,25 +74,38 @@ export const UserModal = ({ user, setShowUser }: UserModalProps) => {
         {/* Container for drivinglicense validation */}
         {!user.is_validated && (
           <>
-            <div className="mb-2 text-secondary">
+            <div className="mb-2 text-secondary flex gap-6 flex-col">
               <h4 className="text-xl">Driving license:</h4>
               <div className="flex items-center justify-evenly mb-2 gap-8">
-                <div>
-                  <p>Frontside:</p>
-                  <img
-                    src={`/api/securefiles?fileurl=${frontUrl}`}
-                    alt=""
-                    className="w-70 h-50"
-                  />
-                </div>
-                <div>
-                  <p>Backside:</p>
-                  <img
-                    src={`/api/securefiles?fileurl=${backUrl}`}
-                    alt=""
-                    className="w-70 h-50"
-                  />
-                </div>
+                {/* <p>Frontside:</p> */}
+
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <div>
+                      <p>Frontside:</p>
+
+                      <Image
+                        src={`/api/securefiles?fileurl=${frontUrl}`}
+                        alt=""
+                        // className="w-70 h-50"
+                        width={400}
+                        height={200}
+                      />
+                    </div>
+                    <div>
+                      <p>Backside:</p>
+                      <Image
+                        src={`/api/securefiles?fileurl=${backUrl}`}
+                        alt=""
+                        // className="w-70 h-50"
+                        width={400}
+                        height={200}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             <div className="flex gap-10 mt-4 items-center w-1/2 justify-center">

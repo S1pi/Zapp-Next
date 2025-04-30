@@ -1,6 +1,5 @@
 "use server";
 
-import useAuthentication from "@/hooks/useAuthentication";
 import promisePool from "@/lib/db";
 import { DriverLicenseUrlData, UserWithoutPassword } from "@/types/user";
 import { RowDataPacket } from "mysql2";
@@ -46,7 +45,7 @@ export async function getDrivingLicenseByUserId(
   >(sql, values);
   const drivingLicense = rows[0];
   if (!drivingLicense) {
-    throw new Error("Driving license not found");
+    throw new Error("No driving license found for this user");
   }
   return drivingLicense;
 }
