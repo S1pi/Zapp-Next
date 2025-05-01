@@ -16,10 +16,10 @@ const useAuthentication = () => {
     const { role } = await verifyToken(token);
 
     if (role === "admin") {
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   };
 
   const isContact = async (dealership_contact: number) => {

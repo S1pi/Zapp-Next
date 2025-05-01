@@ -42,6 +42,7 @@ export default function Users() {
   const fetchUsers = async () => {
     try {
       const response = await getAllUsers();
+      console.log("Fetched users:", response); // Log the fetched users
       const validatedUsers = response.filter((user) => user.is_validated);
       const pendingUsers = response.filter((user) => !user.is_validated);
 

@@ -10,6 +10,7 @@ import Image from "next/image";
 import { Form } from "./ui/Form";
 import { Input } from "./ui/Input";
 import { DrivingLicenseValidationSchema } from "@/lib/schemas/expiryDateSchema";
+import { redirect } from "next/navigation";
 
 type UserModalProps = {
   user: UserWithoutPassword | null;
@@ -53,11 +54,15 @@ export const UserModal = ({ user, setShowUser, onSuccess }: UserModalProps) => {
         console.log("Driving license ID:", response.id); // Log the driving license ID
         setIsLoading(false); // Set loading state to false
       } catch (error) {
-        console.error("Error fetching driving license:", error);
+        if (
+          (error as Error).message !== "No driving license found for this user"
+        ) {
+          console.error("Error fetching driving license:", error); // Log the error if it's not a specific message
+        }
         setBackUrl(null); // Reset the back URL on error
         setFrontUrl(null); // Reset the front URL on error
         setDrivingLicenseId(0); // Reset the driving license ID on error
-        setValidationStatus("denied"); // Reset the validation status on error
+        setValidationStatus(null); // Reset the validation status on error
         setIsLoading(false); // Set loading state to false
       }
     };
@@ -106,7 +111,7 @@ export const UserModal = ({ user, setShowUser, onSuccess }: UserModalProps) => {
         {!user.is_validated && (
           <>
             <div className="mb-2 text-secondary flex gap-6 flex-col">
-              <h4 className="text-xl">Driving license:</h4>
+              <h4 className="text-xl text-center">Driving license:</h4>
               <div className="flex items-center justify-evenly mb-2 gap-8">
                 {/* <p>Frontside:</p> */}
 
@@ -114,26 +119,40 @@ export const UserModal = ({ user, setShowUser, onSuccess }: UserModalProps) => {
                   <Spinner />
                 ) : (
                   <>
-                    <div>
-                      <p>Frontside:</p>
-                      <Image
-                        src={`/api/securefiles?fileurl=${frontUrl}`}
-                        alt=""
-                        // className="w-70 h-50"
-                        width={400}
-                        height={200}
-                      />
-                    </div>
-                    <div>
-                      <p>Backside:</p>
-                      <Image
-                        src={`/api/securefiles?fileurl=${backUrl}`}
-                        alt=""
-                        // className="w-70 h-50"
-                        width={400}
-                        height={200}
-                      />
-                    </div>
+                    {!frontUrl && !backUrl ? (
+                      <p className="text-secondary">No driving license found</p>
+                    ) : (
+                      <>
+                        <div>
+                          <p>Frontside:</p>
+                          <Image
+                            unoptimized
+                            src={`/api/securefiles?fileurl=${frontUrl}`}
+                            alt=""
+                            // className="w-70 h-50"
+                            width={400}
+                            height={200}
+                            onError={() => {
+                              redirect("/unauthorized");
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <p>Backside:</p>
+                          <Image
+                            unoptimized
+                            src={`/api/securefiles?fileurl=${backUrl}`}
+                            alt=""
+                            // className="w-70 h-50"
+                            width={400}
+                            height={200}
+                            onError={() => {
+                              redirect("/unauthorized");
+                            }}
+                          />
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
               </div>

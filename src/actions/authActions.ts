@@ -4,9 +4,11 @@ import { verifyToken } from "@/lib/auth";
 import promisePool from "@/lib/db";
 import { getUserById } from "@/services/userService";
 import { UserSessionData, UserSessionDataQuery } from "@/types/user";
+import { error } from "console";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, unauthorized } from "next/navigation";
+import { NextResponse } from "next/server";
 
 export async function getCurrentUser() {
   const cookieStore = await cookies();
@@ -104,4 +106,37 @@ export async function logOutUser() {
   const cookieStore = await cookies();
   cookieStore.set("authToken", "", { maxAge: -1 });
   redirect("/auth/login");
+}
+
+type Role = "admin" | "dealer" | "user";
+
+export async function requireRole(
+  roles: Role | Role[],
+  options?: { mode: "response" }
+) {
+  const session = await getUserSession();
+
+  if (!session) {
+    redirect("/auth/login");
+  }
+
+  if (Array.isArray(roles)) {
+    if (!roles.includes(session.user.role as Role)) {
+      if (options?.mode === "response") {
+        throw NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+      redirect("/unauthorized");
+    }
+
+    return session;
+  }
+
+  if (session.user.role !== roles) {
+    if (options?.mode === "response") {
+      throw NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    redirect("/unauthorized");
+  }
+
+  return session;
 }

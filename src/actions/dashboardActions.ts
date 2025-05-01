@@ -8,9 +8,13 @@ import {
 } from "@/lib/schemas/expiryDateSchema";
 import { DriverLicenseUrlData, UserWithoutPassword } from "@/types/user";
 import { RowDataPacket } from "mysql2";
+import { requireRole } from "./authActions";
+import { LiveDataNumbers } from "@/types/dashboardData";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
-  console.log("Fetching all users from the database...");
+  // console.log("Fetching all users from the database...");
+
+  await requireRole("admin");
 
   const sql = `
     SELECT
@@ -30,7 +34,7 @@ export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   const [rows] = await promisePool.query<
     RowDataPacket[] & UserWithoutPassword[]
   >(sql);
-  console.log("Fetched users:", rows);
+  // console.log("Fetched users:", rows);
 
   return rows;
 }
@@ -45,8 +49,12 @@ export async function getDrivingLicenseByUserId(userId: number): Promise<{
   //   throw new Error("Unauthorized access");
   // }
 
+  console.log("Starting requireRole function...");
+  await requireRole("admin");
+
   const sql = `SELECT id, front_license_url, back_license_url FROM driving_licenses WHERE user_id = ?`;
   const values = [userId];
+  console.log("SQL query starts:");
   const [rows] = await promisePool.query<
     RowDataPacket[] & DriverLicenseUrlData[] & { id: number }[]
   >(sql, values);
@@ -55,7 +63,7 @@ export async function getDrivingLicenseByUserId(userId: number): Promise<{
     throw new Error("No driving license found for this user");
   }
 
-  console.log("Driving license data:", drivingLicense);
+  // console.log("Driving license data:", drivingLicense);
 
   return drivingLicense;
 }
@@ -109,6 +117,7 @@ export async function denyDrivingLicense(
   userId: number,
   drivingLicenseId: number
 ): Promise<void> {
+  await requireRole("admin");
   const connection = await promisePool.getConnection();
   try {
     await connection.beginTransaction();
@@ -197,4 +206,44 @@ export async function drivingLicenseValidation(
       message: "Error validating driving license",
     };
   }
+}
+
+export async function getLiveData(): Promise<LiveDataNumbers> {
+  const session = await requireRole(["admin", "dealer"]);
+
+  let sql: string;
+  const params = [];
+
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  // console.log("Dealership ID:", dealershipId);
+
+  if (session.user.role === "admin") {
+    sql = `SELECT
+      (SELECT COUNT(*) FROM users) AS total_users,
+      (SELECT COUNT(*) FROM cars) AS total_cars,
+      (SELECT COUNT(*) FROM cars WHERE is_reserved = 0) AS available_cars,
+      (SELECT COUNT(*) FROM dealerships) AS total_dealerships,
+      (SELECT COUNT(*) FROM cars WHERE dealership_id = ?) AS total_company_cars,
+      (SELECT COUNT(*) FROM cars WHERE dealership_id = ? AND is_reserved = 0) AS available_company_cars`;
+    params.push(dealershipId, dealershipId);
+  } else {
+    sql = `SELECT
+      (SELECT COUNT(*) FROM users) AS total_users,
+      (SELECT COUNT(*) FROM cars WHERE dealership_id = ?) AS total_company_cars,
+      (SELECT COUNT(*) FROM cars WHERE dealership_id = ? AND is_reserved = 0) AS available_company_cars`;
+    params.push(dealershipId, dealershipId);
+  }
+
+  const [rows] = await promisePool.query<RowDataPacket[] & LiveDataNumbers[]>(
+    sql,
+    params
+  );
+
+  const liveData = rows[0];
+  if (!liveData) {
+    throw new Error("No live data found");
+  }
+
+  return liveData;
 }
