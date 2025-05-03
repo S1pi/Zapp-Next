@@ -10,6 +10,7 @@ import { DriverLicenseUrlData, UserWithoutPassword } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 import { requireRole } from "./authActions";
 import { LiveDataNumbers } from "@/types/dashboardData";
+import { getLiveDashboardData } from "@/services/liveDashService";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -211,36 +212,16 @@ export async function drivingLicenseValidation(
 export async function getLiveData(): Promise<LiveDataNumbers> {
   const session = await requireRole(["admin", "dealer"]);
 
-  let sql: string;
-  const params = [];
-
   const dealershipId = session.dealership?.id; // Get the dealership ID from the session
 
   // console.log("Dealership ID:", dealershipId);
 
-  if (session.user.role === "admin") {
-    sql = `SELECT
-      (SELECT COUNT(*) FROM users) AS total_users,
-      (SELECT COUNT(*) FROM cars) AS total_cars,
-      (SELECT COUNT(*) FROM cars WHERE is_reserved = 0) AS available_cars,
-      (SELECT COUNT(*) FROM dealerships) AS total_dealerships,
-      (SELECT COUNT(*) FROM cars WHERE dealership_id = ?) AS total_company_cars,
-      (SELECT COUNT(*) FROM cars WHERE dealership_id = ? AND is_reserved = 0) AS available_company_cars`;
-    params.push(dealershipId, dealershipId);
-  } else {
-    sql = `SELECT
-      (SELECT COUNT(*) FROM users) AS total_users,
-      (SELECT COUNT(*) FROM cars WHERE dealership_id = ?) AS total_company_cars,
-      (SELECT COUNT(*) FROM cars WHERE dealership_id = ? AND is_reserved = 0) AS available_company_cars`;
-    params.push(dealershipId, dealershipId);
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
   }
 
-  const [rows] = await promisePool.query<RowDataPacket[] & LiveDataNumbers[]>(
-    sql,
-    params
-  );
+  const liveData = await getLiveDashboardData(session.user.role, dealershipId);
 
-  const liveData = rows[0];
   if (!liveData) {
     throw new Error("No live data found");
   }
