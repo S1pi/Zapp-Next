@@ -1,21 +1,14 @@
 "use client";
 
 import { getAllUsers } from "@/actions/dashboardActions";
-import { Spinner } from "@/components/Spinner";
-import { UserList } from "@/components/UserList";
-import { UserModal } from "@/components/UserModal";
+import { CategorySelectionNav } from "@/app/_components/CategorySelectionNav";
+import { Spinner } from "@/app/_components/Spinner";
+import { UserList } from "@/app/_components/UserList";
+import { UserModal } from "@/app/_components/UserModal";
 import { useAdminSession } from "@/contexts/userContext";
 import { UserWithoutPassword } from "@/types/user";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-
-// export const Spinner = () => {
-//   return (
-//     <div className="flex justify-center items-center h-full">
-//       <div className="animate-spin rounded-full h-12 w-12 border-4 border-seperator-line border-t-seabed-green" />
-//     </div>
-//   );
-// };
 
 export default function Users() {
   // const { isAdmin } = useAuthentication();
@@ -76,7 +69,7 @@ export default function Users() {
 
     // console.log("view", view);
     fetchUsers();
-  }, [user, isAdmin, router, startTransition, view]);
+  }, [user, isAdmin, router, startTransition]);
 
   if (!user || !isAdmin || isPending) {
     return <Spinner />;
@@ -85,55 +78,27 @@ export default function Users() {
   return (
     <div>
       <h1 className="text-h2 text-seabed-green mb-2 mt-5">Users</h1>
-      <div className="flex justify-between items-center mt-4 py-4">
-        <div className="space-x-4 relative border-b-2 border-seperator-line w-full">
-          <div className="flex">
-            <button
-              onClick={() => {
-                setView("all");
-              }}
-              className="relative py-2 px-4 text-seabed-green text-lg cursor-pointer"
-            >
-              Kaikki{" "}
-              <span className="ml-1 text-secondary rounded-full bg-card-background border-1 border-card-stroke px-3 py-1">
-                {validatedUsers.length}
-              </span>
-              {view === "all" && (
-                // bottom: calc(var(--spacing) * -0.5) /* -0.125rem = -2px */;
-                <span className="absolute -bottom-[3px] left-0 w-full h-1 bg-aqua-gem" />
-              )}
-            </button>
-            <button
-              onClick={() => {
-                setView("pending");
-              }}
-              className="relative py-2 px-4 text-seabed-green text-lg cursor-pointer"
-            >
-              Odottaa hyväksyntää{" "}
-              <span className="ml-1 text-secondary rounded-full bg-card-background border-1 border-card-stroke px-3 py-1">
-                {pendingUsers.length}
-              </span>
-              {view === "pending" && (
-                <span className="absolute -bottom-[3px] left-0 w-full h-1 bg-aqua-gem" />
-              )}
-            </button>
-            <button
-              onClick={() => {
-                setView("dealersAndAdmins");
-              }}
-              className="relative py-2 px-4 text-seabed-green text-lg cursor-pointer"
-            >
-              Dealers And Admins{" "}
-              <span className="ml-1 text-secondary rounded-full bg-card-background border-1 border-card-stroke px-3 py-1">
-                {dealersAndAdmins.length}
-              </span>
-              {view === "dealersAndAdmins" && (
-                <span className="absolute -bottom-[3px] left-0 w-full h-1 bg-aqua-gem" />
-              )}
-            </button>
-          </div>
-        </div>
-      </div>
+
+      <CategorySelectionNav
+        views={[
+          {
+            name: "all",
+            title: "All",
+            count: validatedUsers.length,
+          },
+          {
+            name: "pending",
+            title: "Pending Users",
+            count: pendingUsers.length,
+          },
+          {
+            name: "dealersAndAdmins",
+            title: "Dealers & Admins",
+            count: dealersAndAdmins.length,
+          },
+        ]}
+        setSelectedView={setView}
+      />
 
       {/* Users Table */}
       {view === "pending" && (

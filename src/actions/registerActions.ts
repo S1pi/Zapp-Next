@@ -4,7 +4,7 @@ import {
   userInformationSchema,
   userLoginInformationSchema,
 } from "@/lib/schemas/companyInformationSchema";
-import { ActionResult } from "@/components/ui/Form";
+import { ActionResult } from "@/app/_components/ui/Form";
 import { z } from "zod";
 import {
   checkEmailOrPhoneExists,

@@ -1,7 +1,7 @@
 "use client";
 import { loginAction } from "@/actions/loginActions";
-import { Form } from "@/components/ui/Form";
-import { Input } from "@/components/ui/Input";
+import { Form } from "@/app/_components/ui/Form";
+import { Input } from "@/app/_components/ui/Input";
 import { loginSchema } from "@/lib/schemas/loginSchema";
 import Image from "next/image";
 import Link from "next/link";

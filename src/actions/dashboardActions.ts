@@ -1,6 +1,6 @@
 "use server";
 
-import { ActionResult } from "@/components/ui/Form";
+import { ActionResult } from "@/app/_components/ui/Form";
 import promisePool from "@/lib/db";
 import {
   DrivingLicenseValidationSchema,
