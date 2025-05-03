@@ -29,6 +29,7 @@ const adminCards = (data: AdminLiveData | null) => {
       "Vapaita ZAPP-autoja",
       "Vapaita autoja",
       "Käyttäjiä",
+      "Jälleenmyyjiä",
     ]);
 
   return [
@@ -41,13 +42,14 @@ const adminCards = (data: AdminLiveData | null) => {
       value: `${data.available_cars}/${data.total_cars}`,
     },
     { title: "Käyttäjiä", value: data.total_users },
+    { title: "Yrityksiä", value: data.total_dealerships },
   ];
 };
 const dealerCards = (data: DealerLiveData | null) => {
   if (!data)
     return skeletonCards([
       "Vapaita autoja",
-      "Huollossa olevia autoja",
+      "Huollossa olevia autoja (hardcoded)",
       "Käyttäjiä",
     ]);
 
@@ -57,7 +59,7 @@ const dealerCards = (data: DealerLiveData | null) => {
       value: `${data.available_company_cars}/${data.total_company_cars}`,
     },
     // Hardcoded value for demo purposes
-    { title: "Huollossa olevia autoja", value: "2" },
+    { title: "Huollossa olevia autoja (hardcoded)", value: "2" },
     { title: "Käyttäjiä", value: data.total_users },
   ];
 };

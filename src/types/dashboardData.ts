@@ -13,6 +13,26 @@ type DealerLiveData = {
   available_company_cars: number;
 };
 
-export type LiveDataNumbers = AdminLiveData | DealerLiveData;
+type AdminLastWeekData = {
+  all_reservations_count: number;
+  company_reservations_count: number;
+  total_revenue: number;
+  company_revenue: number;
+  reservation_average_price: number;
+  company_reservation_average_price: number;
+};
 
-export type { AdminLiveData, DealerLiveData };
+type DealerLastWeekData = Omit<
+  AdminLastWeekData,
+  "all_reservations_count" | "total_revenue" | "reservation_average_price"
+>;
+
+export type LiveDataNumbers = AdminLiveData | DealerLiveData;
+export type LastWeekDataNumbers = AdminLastWeekData | DealerLastWeekData;
+
+export type {
+  AdminLiveData,
+  DealerLiveData,
+  AdminLastWeekData,
+  DealerLastWeekData,
+};

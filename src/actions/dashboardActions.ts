@@ -9,8 +9,12 @@ import {
 import { DriverLicenseUrlData, UserWithoutPassword } from "@/types/user";
 import { RowDataPacket } from "mysql2";
 import { requireRole } from "./authActions";
-import { LiveDataNumbers } from "@/types/dashboardData";
-import { getLiveDashboardData } from "@/services/liveDashService";
+import { LastWeekDataNumbers, LiveDataNumbers } from "@/types/dashboardData";
+import {
+  getLastWeekDashboardData,
+  getLiveDashboardData,
+} from "@/services/liveDashService";
+import { InvalidRoleError } from "@/lib/customErrors";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -220,11 +224,64 @@ export async function getLiveData(): Promise<LiveDataNumbers> {
     throw new Error("Dealership ID not found in session");
   }
 
-  const liveData = await getLiveDashboardData(session.user.role, dealershipId);
+  try {
+    const liveData = await getLiveDashboardData(
+      session.user.role,
+      dealershipId
+    );
 
-  if (!liveData) {
-    throw new Error("No live data found");
+    if (!liveData) {
+      throw new Error("No live data found");
+    }
+
+    return liveData;
+  } catch (err) {
+    if (err instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: err.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    console.error("Error fetching live data:", err);
+    throw err; // Rethrow the error to be handled by the caller
+  }
+}
+
+export async function getLastWeekData(): Promise<LastWeekDataNumbers> {
+  const session = await requireRole(["admin", "dealer"]);
+
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
   }
 
-  return liveData;
+  try {
+    const lastWeekData = await getLastWeekDashboardData(
+      session.user.role,
+      dealershipId
+    );
+
+    if (!lastWeekData) {
+      throw new Error("No last week data found");
+    }
+
+    return lastWeekData;
+  } catch (err: any) {
+    // if (err.code === "ER_NO_REFERENCED_ROW_2") {
+    //   throw new Error("No last week data found for this dealership");
+    // }
+
+    if (err instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: err.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    throw err; // Rethrow the error to be handled by the caller
+  }
 }

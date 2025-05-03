@@ -82,3 +82,15 @@ export class ValidationError extends Error {
     Object.setPrototypeOf(this, ValidationError.prototype);
   }
 }
+
+export class InvalidRoleError extends Error {
+  statusCode: number;
+
+  constructor(message: string, statusCode = 400) {
+    super(message);
+    this.statusCode = statusCode;
+    this.name = "InvalidRoleError";
+
+    Object.setPrototypeOf(this, InvalidRoleError.prototype);
+  }
+}
