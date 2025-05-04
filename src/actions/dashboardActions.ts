@@ -15,6 +15,8 @@ import {
   getLiveDashboardData,
 } from "@/services/liveDashService";
 import { InvalidRoleError } from "@/lib/customErrors";
+import { getReservationsService } from "@/services/reservationService";
+import { ReservationReturnType } from "@/types/reservations";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -283,5 +285,38 @@ export async function getLastWeekData(): Promise<LastWeekDataNumbers> {
       throw new Error("Invalid user role");
     }
     throw err; // Rethrow the error to be handled by the caller
+  }
+}
+
+export async function getAllReservations(): Promise<ReservationReturnType[]> {
+  const session = await requireRole(["admin", "dealer"]);
+
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+
+  try {
+    const allReservations = await getReservationsService(
+      session.user.role,
+      dealershipId
+    );
+
+    if (!allReservations) {
+      throw new Error("No reservations found");
+    }
+
+    return allReservations;
+  } catch (error: any) {
+    if (error instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: error.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    console.error("Error fetching all reservations:", error);
+    throw error; // Rethrow the error to be handled by the caller
   }
 }
