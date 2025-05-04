@@ -34,10 +34,10 @@ VALUES
 
 /* --- 3. dealerships -------------------------------------- */
 INSERT INTO dealerships
-  (id, name, address, registeration_number, contact_id)
+  (name, address, registeration_number, contact_id)
 VALUES
-  (1, 'Northern Motors', 'Dealer Road 2, Espoo',  'FI1234567', 2),
-  (2, 'City Cars',       'Auto Lane 3, Vantaa',   'FI7654321', 1);
+  ('Northern Motors', 'Dealer Road 2, Espoo',  'FI1234567', 4),
+  ('City Cars',       'Auto Lane 3, Vantaa',   'FI7654321', 1);
 
 /* --- 4. cars --------------------------------------------- */
 INSERT INTO cars
@@ -48,9 +48,9 @@ VALUES
       1, 60.169900, 24.938400, 0),
   (2, 1, 'Volkswagen',  'Golf',    2021, 'DEF-456', 5,
       1, 60.170000, 24.939500, 1),
-  (3, 2, 'Tesla',       'Model 3', 2023, 'TES-001', 5,
+  (3, 1, 'Tesla',       'Model 3', 2023, 'TES-001', 5,
       2, 60.317500, 24.964000, 1),
-  (4, 2, 'Volvo',       'XC40',    2022, 'GHI-789', 5,
+  (4, 5, 'Volvo',       'XC40',    2022, 'GHI-789', 5,
       2, 60.318000, 24.965000, 0);
 
 /* --- 5. reservations ------------------------------------- */
