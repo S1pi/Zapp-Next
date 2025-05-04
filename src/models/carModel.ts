@@ -58,7 +58,7 @@ const selectCarById = async (carId: number): Promise<Car> => {
   const [rows] = await dbConnection.query<RowDataPacket[] & Car[]>(sql, params);
 
   if (rows.length === 0) {
-    throw new Error("Car not found");
+    throw new NotFoundError("Car not found");
   }
 
   return rows[0];
@@ -89,10 +89,38 @@ const selectCarsByDealershipId = async (dsId: number): Promise<Car[]> => {
   return rows;
 };
 
+const updateCarLocation = async (
+  carId: number,
+  location: string
+): Promise<void> => {
+  const sql = `UPDATE cars SET longitude = ?, latitude = ? WHERE id = ?`;
+  const params = [...location.split(","), carId];
+  const [result] = await dbConnection.execute<ResultSetHeader>(sql, params);
+  const { affectedRows } = result;
+  if (affectedRows === 0) {
+    throw new NotFoundError("Car not found");
+  }
+};
+
+const updateCarStatus = async (
+  carId: number,
+  status: boolean
+): Promise<void> => {
+  const sql = `UPDATE cars SET is_reserved = ? WHERE id = ?`;
+  const params = [status, carId];
+  const [result] = await dbConnection.execute<ResultSetHeader>(sql, params);
+  const { affectedRows } = result;
+  if (affectedRows === 0) {
+    throw new NotFoundError("Car not found");
+  }
+};
+
 export {
   insertCar,
   selectCarById,
   selectAllCars,
   selectCarsByDealershipId,
   insertCarShowcase,
+  updateCarLocation,
+  updateCarStatus,
 };

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { FaHouse, FaCar, FaUsers, FaListUl } from "react-icons/fa6";
 
 type DashboardNavigationProps = {
-  user: Omit<UserWithoutPassword, "validated">;
+  user: Omit<UserWithoutPassword, "is_validated">;
 };
 
 // Define the navigation items for the admin dashboard

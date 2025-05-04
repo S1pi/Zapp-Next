@@ -1,75 +1,63 @@
 "use client";
 
+import { getAllUsers } from "@/actions/dashboardActions";
+import { CategorySelectionNav } from "@/app/_components/CategorySelectionNav";
+import { Spinner } from "@/app/_components/Spinner";
+import { UserList } from "@/app/_components/UserList";
+import { UserModal } from "@/app/_components/UserModal";
 import { useAdminSession } from "@/contexts/userContext";
 import { UserWithoutPassword } from "@/types/user";
 import { useRouter } from "next/navigation";
-import { useEffect, useTransition } from "react";
-
-// Sample data for users
-const users = [
-  {
-    name: "Jani-Petteri Lindqvist",
-    phone: "+358 40 6920069",
-    email: "jani-p@gmail.com",
-    registered: "18.3.2025 15:37",
-  },
-  {
-    name: "Aatu Kuokkanen",
-    phone: "+358 40 6920069",
-    email: "aatuk@gmail.com",
-    registered: "18.3.2025 15:37",
-  },
-  {
-    name: "Jan Schuravlev",
-    phone: "+358 40 6920069",
-    email: "janschv@gmail.com",
-    registered: "18.3.2025 15:37",
-  },
-  {
-    name: "Juha Kuusmaa-Teir",
-    phone: "+358 40 6920069",
-    email: "juha@hercules.fi",
-    registered: "18.3.2025 15:37",
-  },
-  {
-    name: "Jaakko Myyrä",
-    phone: "+358 40 6920069",
-    email: "jmyyra@gmail.com",
-    registered: "18.3.2025 15:37",
-  },
-];
-
-// mock user data for demonstration purposes
-const adminUser: UserWithoutPassword = {
-  id: 1,
-  email: "dwad@daw.fo",
-  firstname: "Admin",
-  lastname: "User",
-  phone_number: "123456789",
-  postnumber: "1234",
-  address: "Admin Street 1",
-  validated: true,
-  role: "admin",
-  // role: "dealer",
-  created_at: new Date().toISOString(),
-};
-
-export const Spinner = () => {
-  return (
-    <div className="flex justify-center items-center h-full">
-      <div className="animate-spin rounded-full h-12 w-12 border-4 border-seperator-line border-t-seabed-green" />
-    </div>
-  );
-};
+import { useEffect, useState, useTransition } from "react";
 
 export default function Users() {
+  // const { isAdmin } = useAuthentication();
   const { userSession } = useAdminSession();
+  const isAdmin = userSession?.user.role === "admin"; // Check if the user is an admin
   const router = useRouter();
-
-  const user = userSession?.user; // Replace with actual user data from context or props
-  const isAdmin = user?.role === "admin"; // Check if the user is an admin
+  const user = userSession?.user; // Get the user from the session
 
   const [isPending, startTransition] = useTransition();
+  const [validatedUsers, setValidatedUsers] = useState<UserWithoutPassword[]>(
+    []
+  ); // State to hold users
+  const [pendingUsers, setPendingUsers] = useState<UserWithoutPassword[]>([]); // State to hold pending users
+  const [dealersAndAdmins, setDealersAndAdmin] = useState<
+    UserWithoutPassword[]
+  >([]); // State to hold dealers and
+
+  const [view, setView] = useState("all"); // State to hold the current view (all, pending, etc.)
+  const [selectedUser, setSelectedUser] = useState<UserWithoutPassword | null>(
+    null
+  ); // State to hold the selected user for the modal
+  const [showUserDetails, setShowUserDetails] = useState(false); // State to control the visibility of the user details
+
+  const fetchUsers = async () => {
+    try {
+      const response = await getAllUsers();
+      console.log("Fetched users:", response); // Log the fetched users
+      const validatedUsers = response.filter((user) => user.is_validated);
+      const pendingUsers = response.filter((user) => !user.is_validated);
+
+      const dealersAndAdmins = response
+        .filter((user) => user.role === "dealer" || user.role === "admin")
+        .sort((a, b) => {
+          const order: Record<string, number> = { dealer: 0, admin: 1 };
+          return (order[a.role] || 0) - (order[b.role] || 0);
+        });
+      setDealersAndAdmin(dealersAndAdmins); // Set the dealers and admins state
+      setValidatedUsers(validatedUsers); // Set the validated users state
+      setPendingUsers(pendingUsers); // Set the pending users state
+
+      // setUsers(response); // Set the users state with the fetched data
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleValidation = () => {
+    fetchUsers(); // Fetch users again after validation
+  };
 
   useEffect(() => {
     if (!user || !isAdmin) {
@@ -78,6 +66,9 @@ export default function Users() {
         router.push("/dashboard");
       });
     }
+
+    // console.log("view", view);
+    fetchUsers();
   }, [user, isAdmin, router, startTransition]);
 
   if (!user || !isAdmin || isPending) {
@@ -87,38 +78,60 @@ export default function Users() {
   return (
     <div>
       <h1 className="text-h2 text-seabed-green mb-2 mt-5">Users</h1>
-      <div className="flex justify-between items-center mt-4 py-4">
-        <div className="flex space-x-2">
-          <button className=" text-black-zapp rounded-full text-mid cursor-pointer">
-            Kaikki{" "}
-            <span className="ml-1 text-secondary rounded-full bg-card-background border-1 border-card-stroke px-3 py-1">
-              {users.length}
-            </span>
-          </button>
-          <button className="px-3 text-black-zapp rounded-full text-mid cursor-pointer">
-            Odottaa hyväksyntää{" "}
-            <span className="ml-1 text-secondary rounded-full bg-card-background border-1 border-card-stroke px-3 py-1">
-              0
-            </span>
-          </button>
-        </div>
-      </div>
+
+      <CategorySelectionNav
+        views={[
+          {
+            name: "all",
+            title: "All",
+            count: validatedUsers.length,
+          },
+          {
+            name: "pending",
+            title: "Pending Users",
+            count: pendingUsers.length,
+          },
+          {
+            name: "dealersAndAdmins",
+            title: "Dealers & Admins",
+            count: dealersAndAdmins.length,
+          },
+        ]}
+        setSelectedView={setView}
+      />
 
       {/* Users Table */}
-      <div className="overflow-x-auto border-t border-seperator-line">
-        <table className="w-full text-left">
-          <tbody>
-            {users.map((user, index) => (
-              <tr key={index} className="border-b border-secondary">
-                <td className="py-6 px-2 text-black-zapp">{user.name}</td>
-                <td className="py-6 px-2 text-black-zapp">{user.phone}</td>
-                <td className="py-6 px-2 text-black-zapp">{user.email}</td>
-                <td className="py-6 px-2 text-black-zapp">{user.registered}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {view === "pending" && (
+        <UserList
+          users={pendingUsers}
+          setSelectedUser={setSelectedUser}
+          setShowUser={setShowUserDetails}
+        />
+      )}
+      {view === "all" && (
+        <UserList
+          users={validatedUsers}
+          setSelectedUser={setSelectedUser}
+          setShowUser={setShowUserDetails}
+        />
+      )}
+      {view === "dealersAndAdmins" && (
+        <UserList
+          users={dealersAndAdmins}
+          setSelectedUser={setSelectedUser}
+          setShowUser={setShowUserDetails}
+        />
+      )}
+
+      {/* User Details Modal */}
+
+      {showUserDetails && (
+        <UserModal
+          user={selectedUser}
+          setShowUser={setShowUserDetails}
+          onSuccess={handleValidation}
+        />
+      )}
     </div>
   );
 }

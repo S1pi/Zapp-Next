@@ -1,5 +1,5 @@
 "use server";
-import { ActionResult } from "@/components/ui/Form";
+import { ActionResult } from "@/app/_components/ui/Form";
 import { NotFoundError, UnauthorizedError } from "@/lib/customErrors";
 import { normalizePhoneNumber } from "@/lib/normalizePhone";
 import { loginSchema } from "@/lib/schemas/loginSchema";

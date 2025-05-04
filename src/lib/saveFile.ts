@@ -7,7 +7,11 @@ type FileUsage =
   | "profile_picture"
   | "license_front"
   | "license_back"
-  | "car_showcase";
+  | "car_showcase"
+  | "dropoff_front"
+  | "dropoff_back"
+  | "dropoff_side_left"
+  | "dropoff_side_right";
 
 type SaveFileOptions = {
   file: File;
@@ -39,6 +43,13 @@ export async function saveFile({ file, fileUsage }: SaveFileOptions) {
     case "car_showcase":
       relativeFilePath = "public/uploads/cars";
       publicUrlPrefix = "/uploads/cars";
+      break;
+    case "dropoff_front":
+    case "dropoff_back":
+    case "dropoff_side_left":
+    case "dropoff_side_right":
+      relativeFilePath = "secure_uploads/dropoff";
+      secureUrlPrefix = "secure_uploads/dropoff";
       break;
     default:
       throw new InvalidFileUsageType("Unsupported file usage type");

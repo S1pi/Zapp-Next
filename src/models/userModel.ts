@@ -12,6 +12,20 @@ const getUserById = async (id: number): Promise<User> => {
   return userData;
 };
 
+const getUserValidation = async (id: number): Promise<Boolean> => {
+  const query = "SELECT is_validated FROM users WHERE id = ?";
+  const [rows] = await promisePool.query<RowDataPacket[]>(query, [id]);
+  const userData = rows[0];
+  if (!userData) {
+    throw new NotFoundError("User not found");
+  }
+  if (userData.is_validated === 1) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const createUser = async (userData: UserCreate): Promise<number> => {
   const sql =
     "INSERT INTO users (email, firstname, lastname, password, phone_number, postnumber, address) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -154,4 +168,5 @@ export {
   updateUserRole,
   checkEmailOrPhoneExists,
   updateUser,
+  getUserValidation,
 };

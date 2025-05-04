@@ -87,7 +87,9 @@ const userRegister = async (
     const { password, ...userWithoutPassword } = createdUser;
 
     // Convert validated to boolean
-    userWithoutPassword.validated = Boolean(userWithoutPassword.validated);
+    userWithoutPassword.is_validated = Boolean(
+      userWithoutPassword.is_validated
+    );
 
     const driverLicenseUrlData = {
       front_license_url: frontSaveFile.fileUrl,
@@ -139,11 +141,11 @@ const userLogin = async (emailOrPhone: string, pass: string) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
 
-    user.validated = Boolean(user.validated);
+    user.is_validated = Boolean(user.is_validated);
 
     const tokenData: TokenData = {
       id: user.id,
-      validated: user.validated,
+      is_validated: user.is_validated,
       role: user.role,
     };
 
@@ -178,7 +180,7 @@ const getUserById = async (id: number) => {
     }
 
     const { password, ...userWithoutPassword } = user;
-    user.validated = Boolean(user.validated);
+    user.is_validated = Boolean(user.is_validated);
 
     return userWithoutPassword;
   } catch (err) {
