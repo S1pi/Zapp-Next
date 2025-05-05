@@ -89,15 +89,15 @@ export const DealerCars = () => {
         Yrityksen autot
       </h1> */}
 
+      <button
+        className="px-3 py-2 bg-secondary max-w-30 text-white rounded-lg text-sm hover:bg-seabed-green cursor-pointer"
+        onClick={() => {
+          setShowModal(true); // Show the modal
+        }}
+      >
+        Add new car
+      </button>
       <div className="flex flex-col gap-4 max-h-full overflow-y-auto pb-6">
-        <button
-          className="px-3 py-2 bg-secondary max-w-30 text-white rounded-lg text-sm hover:bg-seabed-green cursor-pointer"
-          onClick={() => {
-            setShowModal(true); // Show the modal
-          }}
-        >
-          Add new car
-        </button>
         {view === "all" && <CarTable cars={allCars} />}
         {view === "available" && <CarTable cars={availableCars} />}
         {view === "reserved" && <CarTable cars={reservedCars} />}

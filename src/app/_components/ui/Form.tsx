@@ -54,6 +54,8 @@ export const Form = <TSchema extends ZodSchema<any>>({
   const onSubmit: SubmitHandler<z.infer<TSchema>> = async (data) => {
     setGeneralError(null); // Reset general error before submission
 
+    // console.log("Form data: ", data); // Log the form data
+
     // Check if serverAction is provided if not, call onSuccess directly
     if (!serverAction) {
       // console.log("Server action not provided, calling onSuccess directly.");

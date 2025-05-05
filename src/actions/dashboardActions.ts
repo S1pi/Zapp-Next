@@ -20,6 +20,9 @@ import { ReservationReturnType } from "@/types/reservations";
 import { addNewCar, getCarsForAP } from "@/services/carService";
 import { newCarSchema } from "@/lib/schemas/newCarSchema";
 import { z } from "zod";
+import { NewParkingZone } from "@/types/parking";
+import { newParkingZoneSchema } from "@/lib/schemas/parkingZoneSchema";
+import { addParkingZone } from "@/services/parkingService";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -417,4 +420,59 @@ export async function createNewCar(
       message: "Car could not be added",
     };
   }
+}
+
+type ParkingZoneValues = z.infer<typeof newParkingZoneSchema>;
+
+export async function createParkingZone(data: ParkingZoneValues) {
+  await requireRole(["admin", "dealer"]); // Check if the user has the required role
+
+  console.log("Checking parking zone data:", data);
+
+  const parsedData = newParkingZoneSchema.safeParse(data);
+  if (!parsedData.success) {
+    const issue = parsedData.error.issues[0];
+    const field = issue.path[0] as keyof ParkingZoneValues; // Get the field name from the error path
+
+    return {
+      success: false,
+      field,
+      message: issue.message,
+    };
+  }
+  const parkingZoneData = parsedData.data; // Destructure the parsed data
+
+  // Change the location format to match the database schema
+  const location = [
+    {
+      latitude: parkingZoneData.location[0].lat,
+      longitude: parkingZoneData.location[0].lng,
+    },
+    {
+      latitude: parkingZoneData.location[1].lat,
+      longitude: parkingZoneData.location[1].lng,
+    },
+  ];
+
+  const newParkingZoneData = {
+    name: parkingZoneData.name,
+    description: parkingZoneData.description,
+    location,
+  };
+
+  console.log("New parking zone data:", newParkingZoneData);
+
+  const createParkingZone = await addParkingZone(newParkingZoneData);
+
+  console.log("New parking zone added:", createParkingZone);
+
+  if (!createParkingZone) {
+    throw new Error("Parking zone could not be added");
+  }
+
+  return {
+    success: true,
+    message: "Parking zone added successfully",
+    // resultData: createParkingZone.parkingZone, // Include the new parking zone data in the response this is optional
+  };
 }

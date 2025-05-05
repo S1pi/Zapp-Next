@@ -3,7 +3,13 @@
 import { UserWithoutPassword } from "@/types/user";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaHouse, FaCar, FaUsers, FaListUl } from "react-icons/fa6";
+import {
+  FaHouse,
+  FaCar,
+  FaUsers,
+  FaListUl,
+  FaSquareParking,
+} from "react-icons/fa6";
 
 type DashboardNavigationProps = {
   user: Omit<UserWithoutPassword, "is_validated">;
@@ -13,6 +19,7 @@ type DashboardNavigationProps = {
 const adminMenu = [
   { name: "Live Dashboard", href: "/live-dashboard", icon: <FaHouse /> },
   { name: "Cars", href: "/cars", icon: <FaCar /> },
+  { name: "Parking Zones", href: "/parkingzones", icon: <FaSquareParking /> },
   { name: "Users", href: "/users", icon: <FaUsers /> },
   { name: "Reservations", href: "/reservations", icon: <FaListUl /> },
 ];
@@ -21,6 +28,7 @@ const adminMenu = [
 const dealerMenu = [
   { name: "Live Dashboard", href: "/live-dashboard", icon: <FaHouse /> },
   { name: "Cars", href: "/cars", icon: <FaCar /> },
+  { name: "Parking Zones", href: "/parkingzones", icon: <FaSquareParking /> },
   { name: "Reservations", href: "/reservations", icon: <FaListUl /> },
 ];
 
