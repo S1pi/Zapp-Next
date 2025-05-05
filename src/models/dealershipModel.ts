@@ -1,5 +1,9 @@
 import dbConnection from "@/lib/db";
-import { Dealership, DealershipCreate } from "@/types/dealership";
+import {
+  Dealership,
+  DealershipCreate,
+  DealershipQuery,
+} from "@/types/dealership";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const insertDealership = async (
@@ -52,4 +56,20 @@ const getDealershipByContactId = async (contactId: number): Promise<number> => {
   return rows[0].id;
 };
 
-export { insertDealership, getDealershipById, getDealershipByContactId };
+const selectAllDealerships = async (): Promise<DealershipQuery[]> => {
+  const query = "SELECT id, name, address FROM dealerships";
+  const [rows] = await dbConnection.query<RowDataPacket[]>(query);
+  const dealerships = rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    address: row.address,
+  }));
+  return dealerships;
+};
+
+export {
+  insertDealership,
+  getDealershipById,
+  getDealershipByContactId,
+  selectAllDealerships,
+};
