@@ -34,5 +34,4 @@ npm run dev
 2. Navigate to:
    - **Swagger UI**: [http://localhost:3000/api-docs](http://localhost:3000/api-docs)
 
-### How to run the Swagger api doc
 
