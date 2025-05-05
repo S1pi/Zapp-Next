@@ -15,6 +15,10 @@ export async function GET(req: NextRequest) {
       { status: 200 }
     );
   } catch (err) {
+    console.log(
+      "-------------------------------------------------------------------------------"
+    );
+    console.error("Error fetching dealerships:", err);
     errorToResponse(err);
   }
 }
