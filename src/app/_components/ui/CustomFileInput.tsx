@@ -84,7 +84,7 @@ const CustomFileInput = ({
             <img
               src={previewUrl}
               alt="destination preview"
-              className={`h-${imageHeight} w-full rounded-lg object-cover`}
+              className={`w-full rounded-lg object-cover ` + imageHeight}
             />
           </div>
           <div className="flex gap-4">

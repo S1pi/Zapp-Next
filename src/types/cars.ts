@@ -20,6 +20,10 @@ type AddCarData = {
   year: number;
   license_plate: string;
   seats: number;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 };
 
 type CarReturnType = {

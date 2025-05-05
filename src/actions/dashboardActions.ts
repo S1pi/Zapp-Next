@@ -362,6 +362,11 @@ export async function createNewCar(
   const userId = session.user.id; // Get the user ID from the session
   const dealershipId = session.dealership?.id; // Get the dealership ID from the session
 
+  console.log("Checking car data:", data);
+
+  // coords
+  console.log("Car coordinates:", data.location);
+
   if (!dealershipId) {
     throw new Error("Dealership ID not found in session");
   }

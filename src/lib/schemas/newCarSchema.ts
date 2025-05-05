@@ -30,6 +30,14 @@ export const newCarSchema = z.object({
     })
     .transform((value) => value.toUpperCase()),
   seats: z.number().int().min(1, { message: "Seats must be at least 1" }),
+  location: z.object({
+    latitude: z.number().min(-90).max(90, {
+      message: "Latitude must be between -90 and 90",
+    }),
+    longitude: z.number().min(-180).max(180, {
+      message: "Longitude must be between -180 and 180",
+    }),
+  }),
   car_img: FileSchema,
 });
 

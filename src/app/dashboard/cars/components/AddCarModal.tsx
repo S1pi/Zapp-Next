@@ -1,15 +1,25 @@
+"use client";
+
 import { createNewCar } from "@/actions/dashboardActions";
+import LocationPicker from "@/app/_components/LocationPicker";
 import CustomFileInput from "@/app/_components/ui/CustomFileInput";
 import { Form } from "@/app/_components/ui/Form";
 import { Input } from "@/app/_components/ui/Input";
 import { newCarSchema } from "@/lib/schemas/newCarSchema";
-import { Dispatch } from "react";
+import { Dispatch, useState } from "react";
+import { useForm, useFormContext } from "react-hook-form";
+import { LocationField } from "./LocationField";
 
 type AddCarModalProps = {
   setShowModal: Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const AddCarModal = ({ setShowModal }: AddCarModalProps) => {
+  const [markerLocation, setMarkerLocation] = useState({
+    latitude: 60.17,
+    longitude: 24.94,
+  });
+
   const handleSuccess = async (data: any) => {
     console.log("Form submitted successfully:", data); // Log the successful form submission
     setShowModal(false); // Close the modal after successful submission
@@ -17,14 +27,15 @@ export const AddCarModal = ({ setShowModal }: AddCarModalProps) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black-zapp/50 z-50">
-      <div className="bg-primary p-6 rounded shadow-lg min-w-1/4 border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
+      <div className="bg-primary p-6 w-2/5 max-h-screen rounded shadow-lg min-w-1/4 border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
         <h1 className="font-bold mb-4 text-seabed-green">Add new car: </h1>
 
         <Form
           validationSchema={newCarSchema}
           serverAction={createNewCar}
           onSuccess={handleSuccess}
-          className="flex flex-row gap-8 self-center text-center"
+          // defaultValues={{ location: markerLocation }}
+          className="flex flex-row gap-8 self-center text-center items-center"
         >
           <div className="flex flex-col gap-4 w-full text-black-zapp flex-1">
             <Input
@@ -75,8 +86,18 @@ export const AddCarModal = ({ setShowModal }: AddCarModalProps) => {
             <CustomFileInput
               inputName="car_img"
               labelText="Car image: "
-              imageHeight={"96"}
+              imageHeight="h-42"
             />
+            <div className="flex flex-col gap-2">
+              <label className="text-black-zapp">Car location: </label>
+              {/* LocationPicker component to select the car's location on the map 
+               Put inside a own component to make it usable for useFormContext */}
+              <LocationField setMarkerLocation={setMarkerLocation} />
+              <p className="text-black-zapp/50 text-sm">
+                Selected location: {markerLocation.latitude},{" "}
+                {markerLocation.longitude}
+              </p>
+            </div>
             <button
               type="submit"
               className="bg-seabed-green text-white py-2 px-4 rounded hover:bg-seabed-green/80 transition duration-300 cursor-pointer"
