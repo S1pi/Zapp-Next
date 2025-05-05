@@ -27,7 +27,7 @@ export const AddCarModal = ({ setShowModal }: AddCarModalProps) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black-zapp/50 z-50">
-      <div className="bg-primary p-6 w-2/5 max-h-screen rounded shadow-lg min-w-1/4 border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
+      <div className="bg-primary p-6 w-2/5 max-h-screen rounded shadow-lg min-w-[700px] border-2 border-black-zapp flex flex-col justify-evenly items-center relative">
         <h1 className="font-bold mb-4 text-seabed-green">Add new car: </h1>
 
         <Form
