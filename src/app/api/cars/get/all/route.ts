@@ -1,4 +1,4 @@
-import { selectAllCars } from "@/models/carModel";
+import { selectAllCars, selectAllCarsWithShowcase } from "@/models/carModel";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -15,9 +15,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const cars = await selectAllCars();
+    // const cars = await selectAllCars(); // This was old one to get all cars
+    const cars = await selectAllCarsWithShowcase(); // This is the new one to get all cars with showcase
 
-    if (!cars) {
+    if (!cars || cars.length === 0) {
       return NextResponse.json({ error: "No cars found" }, { status: 404 });
     }
 

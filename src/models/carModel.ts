@@ -1,7 +1,7 @@
 import dbConnection from "@/lib/db";
 import promisePool from "@/lib/db";
 import { NotFoundError } from "@/lib/customErrors";
-import { AddCarData, Car, CarReturnType } from "@/types/cars";
+import { AddCarData, Car, CarReturnType, CarWithShowcase } from "@/types/cars";
 import { CarShowcaseUpload } from "@/types/files";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
@@ -69,6 +69,20 @@ const selectAllCars = async (): Promise<Car[]> => {
   const sql = `SELECT * FROM cars`;
 
   const [rows] = await dbConnection.query<RowDataPacket[] & Car[]>(sql);
+
+  if (rows.length === 0) {
+    throw new Error("No cars found");
+  }
+
+  return rows;
+};
+
+const selectAllCarsWithShowcase = async (): Promise<CarWithShowcase[]> => {
+  const sql = `SELECT c.*, f.file_url AS car_showcase_url FROM cars c LEFT JOIN files f ON c.id = f.related_id AND f.related_type = 'car' WHERE f.file_usage = 'car_showcase'`;
+
+  const [rows] = await dbConnection.query<RowDataPacket[] & CarWithShowcase[]>(
+    sql
+  );
 
   if (rows.length === 0) {
     throw new Error("No cars found");
@@ -172,6 +186,7 @@ export {
   selectAllCarsAdmin,
   selectAllCarsDealer,
   selectCarsByDealershipId,
+  selectAllCarsWithShowcase,
   insertCarShowcase,
   updateCarLocation,
   updateCarStatus,

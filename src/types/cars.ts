@@ -33,4 +33,8 @@ type CarReturnType = {
   is_reserved: boolean;
 };
 
-export type { Car, CarReturnType, AddCarData };
+type CarWithShowcase = Car & {
+  car_showcase_url: string;
+};
+
+export type { Car, CarReturnType, AddCarData, CarWithShowcase };
