@@ -17,6 +17,7 @@ import {
 import { InvalidRoleError } from "@/lib/customErrors";
 import { getReservationsService } from "@/services/reservationService";
 import { ReservationReturnType } from "@/types/reservations";
+import { getCarsForAP } from "@/services/carService";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -317,6 +318,35 @@ export async function getAllReservations(): Promise<ReservationReturnType[]> {
       throw new Error("Invalid user role");
     }
     console.error("Error fetching all reservations:", error);
+    throw error; // Rethrow the error to be handled by the caller
+  }
+}
+
+export async function getAllCars() {
+  const session = await requireRole(["admin", "dealer"]);
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+
+  try {
+    const allCars = await getCarsForAP(session.user.role, dealershipId);
+
+    if (!allCars) {
+      throw new Error("No cars found");
+    }
+    return allCars;
+  } catch (error: any) {
+    if (error instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: error.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    console.error("Error fetching all cars:", error);
     throw error; // Rethrow the error to be handled by the caller
   }
 }

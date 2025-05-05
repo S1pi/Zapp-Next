@@ -21,4 +21,16 @@ type AddCarData = {
   seats: number;
 };
 
-export type { Car, AddCarData };
+type CarReturnType = {
+  id: number;
+  dealership_id: number;
+  dealership_name: string;
+  brand: string;
+  model: string;
+  year: number;
+  color: string;
+  license_plate: string;
+  is_reserved: boolean;
+};
+
+export type { Car, CarReturnType, AddCarData };

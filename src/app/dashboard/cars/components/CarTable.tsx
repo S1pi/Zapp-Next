@@ -1,12 +1,7 @@
+import { CarReturnType } from "@/types/cars";
+
 type CarTableProps = {
-  cars: {
-    availability: string;
-    model: string;
-    color: string;
-    license: string;
-    company: string;
-    lastUpdate: string;
-  }[];
+  cars: CarReturnType[];
 };
 
 export const CarTable = ({ cars }: CarTableProps) => {
@@ -14,28 +9,33 @@ export const CarTable = ({ cars }: CarTableProps) => {
     <div className="h-full px-4 pb-6">
       <table className="w-full min-w-max text-left">
         <tbody>
-          {cars.map((car, index) => (
-            <tr key={index} className="border-b border-secondary">
+          {cars.map((car) => (
+            <tr key={car.id} className="border-b border-secondary">
               <td className="py-4 px-2">
                 <span
                   className={`px-3 py-1 rounded-full text-sm ${
-                    car.availability === "Saatavilla"
-                      ? "bg-aqua-gem text-black-zapp"
-                      : "bg-red-200 text-red-800"
+                    car.is_reserved
+                      ? "bg-red-200 text-red-800"
+                      : "bg-aqua-gem text-black-zapp"
                   }`}
                 >
-                  {car.availability}
+                  {car.is_reserved ? "Varattu" : "Vapaa"}
                 </span>
               </td>
               <td className="py-4 px-2">
                 <div>
-                  <p className="text-black-zapp">{car.model}</p>
+                  <p className="text-black-zapp">
+                    {car.brand} {car.model}
+                  </p>
                   <p className="text-sm text-secondary">{car.color}</p>
                 </div>
               </td>
-              <td className="py-4 px-2 text-black-zapp">{car.license}</td>
-              <td className="py-4 px-2 text-black-zapp">{car.company}</td>
-              <td className="py-4 px-2 text-black-zapp">{car.lastUpdate}</td>
+              <td className="py-4 px-2 text-black-zapp">{car.year}</td>
+              <td className="py-4 px-2 text-black-zapp">{car.license_plate}</td>
+              <td className="py-4 px-2 text-black-zapp">
+                {car.dealership_name}
+              </td>
+              {/* <td className="py-4 px-2 text-black-zapp">{car.lastUpdate}</td> */}
               <td className="py-4 px-2">
                 <button className="px-3 py-2 bg-secondary text-white rounded-lg text-sm hover:bg-seabed-green cursor-pointer">
                   Muokkaa

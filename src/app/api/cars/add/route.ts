@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { FileSchema } from "@/lib/FileSchema";
 
-const CarSchema = z.object({
+export const CarSchema = z.object({
   dealership_id: z
     .number()
     .int()
