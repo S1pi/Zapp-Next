@@ -16,6 +16,7 @@ INSERT INTO users
   (id, email, firstname, lastname, password, phone_number,
    postnumber, address, is_validated, role, created_at)
 VALUES
+  
   (1, 'admin@zapp.fi',        'Mikko',  'Manager',
      '$2y$10$abcdefg1234567890', '0400000001',
      '00100', 'Main Street 1, Helsinki', 1, 'admin',  '2025-04-20 08:00:00'),
