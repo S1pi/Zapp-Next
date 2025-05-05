@@ -15,6 +15,7 @@ type Car = {
 type AddCarData = {
   dealership_id: number;
   brand: string;
+  color: string;
   model: string;
   year: number;
   license_plate: string;

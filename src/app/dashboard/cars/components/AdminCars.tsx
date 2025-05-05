@@ -4,12 +4,12 @@ import { CarTable } from "./CarTable";
 import { useEffect, useState } from "react";
 import { getAllCars } from "@/actions/dashboardActions";
 import { CarReturnType } from "@/types/cars";
+import { AddCarModal } from "./AddCarModal";
 
 export const AdminCars = () => {
   const [view, setView] = useState("all"); // State to hold the current view (all, pending, etc.)
   const [allCars, setAllCars] = useState<CarReturnType[]>([]); // State to hold all cars
   const [zappCars, setZappCars] = useState<CarReturnType[]>([]); // State to hold ZAPP cars
-  const [selectedCar, setSelectedCar] = useState<CarReturnType | null>(null); // State to hold the selected car for the modal
   const [showModal, setShowModal] = useState(false); // State to control the visibility of the modal
 
   const [error, setError] = useState<Error | null>(null); // State to hold any error messages
@@ -75,12 +75,19 @@ export const AdminCars = () => {
         setSelectedView={setView}
       />
       <div className="flex flex-col gap-4 max-h-full overflow-y-auto pb-6">
-        <button className="px-3 py-2 bg-secondary max-w-30 text-white rounded-lg text-sm hover:bg-seabed-green cursor-pointer">
+        <button
+          className="px-3 py-2 bg-secondary max-w-30 text-white rounded-lg text-sm hover:bg-seabed-green cursor-pointer"
+          onClick={() => {
+            setShowModal(true); // Show the modal
+          }}
+        >
           Add new car
         </button>
         {view === "all" && <CarTable cars={allCars} />}
         {view === "zapp" && <CarTable cars={zappCars} />}
       </div>
+
+      {showModal && <AddCarModal setShowModal={setShowModal} />}
     </div>
   );
 };

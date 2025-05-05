@@ -17,7 +17,9 @@ import {
 import { InvalidRoleError } from "@/lib/customErrors";
 import { getReservationsService } from "@/services/reservationService";
 import { ReservationReturnType } from "@/types/reservations";
-import { getCarsForAP } from "@/services/carService";
+import { addNewCar, getCarsForAP } from "@/services/carService";
+import { newCarSchema } from "@/lib/schemas/newCarSchema";
+import { z } from "zod";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -348,5 +350,66 @@ export async function getAllCars() {
     }
     console.error("Error fetching all cars:", error);
     throw error; // Rethrow the error to be handled by the caller
+  }
+}
+
+type NewCarValues = z.infer<typeof newCarSchema>;
+
+export async function createNewCar(
+  data: NewCarValues
+): Promise<ActionResult<NewCarValues>> {
+  const session = await requireRole(["admin", "dealer"]);
+  const userId = session.user.id; // Get the user ID from the session
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+  if (!userId) {
+    throw new Error("User ID not found in session");
+  }
+
+  const parsedData = newCarSchema.safeParse(data);
+  if (!parsedData.success) {
+    const issue = parsedData.error.issues[0];
+    const field = issue.path[0] as keyof NewCarValues; // Get the field name from the error path
+
+    return {
+      success: false,
+      field,
+      message: issue.message,
+    };
+  }
+
+  const { car_img, ...carData } = parsedData.data; // Destructure the parsed data
+
+  const carInfo = {
+    ...carData,
+    dealership_id: dealershipId,
+  };
+
+  try {
+    const newCar = await addNewCar(userId, carInfo, car_img);
+
+    console.log("New car added:", newCar);
+
+    if (!newCar) {
+      throw new Error("Car could not be added");
+    }
+
+    return {
+      success: true,
+      message: "Car added successfully",
+      // resultData: newCar, // Include the new car data in the response this is optional
+    };
+  } catch (error: any) {
+    console.error("Error adding new car:", error);
+    if (error.code === "ER_NO_REFERENCED_ROW_2") {
+      throw new Error("Linked dealership not found");
+    }
+    return {
+      success: false,
+      message: "Car could not be added",
+    };
   }
 }

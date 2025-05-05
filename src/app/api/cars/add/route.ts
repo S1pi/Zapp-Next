@@ -12,6 +12,9 @@ export const CarSchema = z.object({
     .positive({ message: "Dealership ID must be a positive integer" }),
   brand: z.string(),
   model: z.string(),
+  color: z.string().min(3, {
+    message: "Color must be at least 3 characters long",
+  }),
   year: z.number().min(1886).max(new Date().getFullYear(), {
     message: "Year must be between 1886 and the current year",
   }),

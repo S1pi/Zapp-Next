@@ -6,13 +6,14 @@ import { CarShowcaseUpload } from "@/types/files";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const insertCar = async (carInfo: AddCarData): Promise<number> => {
-  const sql = `INSERT INTO cars (dealership_id, brand, model, year, license_plate, seats) VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO cars (dealership_id, brand, model, year, color, license_plate, seats) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   const params = [
     carInfo.dealership_id,
     carInfo.brand,
     carInfo.model,
     carInfo.year,
+    carInfo.color,
     carInfo.license_plate,
     carInfo.seats,
   ];
