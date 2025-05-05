@@ -12,7 +12,7 @@ const getUserById = async (id: number): Promise<User> => {
   return userData;
 };
 
-const getUserValidation = async (id: number): Promise<Boolean> => {
+const getUserValidation = async (id: number): Promise<boolean> => {
   const query = "SELECT is_validated FROM users WHERE id = ?";
   const [rows] = await promisePool.query<RowDataPacket[]>(query, [id]);
   const userData = rows[0];
