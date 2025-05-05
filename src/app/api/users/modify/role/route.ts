@@ -1,16 +1,8 @@
 import { NotFoundError } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
-import { updateUserRole } from "@/models/userModel";
 import { modifyUserRole } from "@/services/userService";
 import { NextRequest, NextResponse } from "next/server";
-import z from "zod";
-
-const RoleSchema = z.object({
-  id: z.number().int().positive({ message: "ID must be a positive integer" }),
-  role: z.enum(["admin", "user", "dealer"], {
-    message: "Role must be one of the following: admin, user, dealer",
-  }),
-});
+import { RoleSchema } from "./schema";
 
 export async function POST(req: NextRequest) {
   const userRole = req.headers.get("X-User-Role");

@@ -1,11 +1,7 @@
-import z from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import formattedErrors from "@/lib/formattedErrors";
 import { getDealershipById } from "@/models/dealershipModel";
-
-const DealershipSchema = z.object({
-  id: z.number().int().positive({ message: "ID must be a positive integer" }),
-});
+import { DealershipSchema } from "./schema";
 
 export async function GET(
   req: NextRequest,

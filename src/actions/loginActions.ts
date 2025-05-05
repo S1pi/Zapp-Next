@@ -3,7 +3,6 @@ import { ActionResult } from "@/app/_components/ui/Form";
 import { NotFoundError, UnauthorizedError } from "@/lib/customErrors";
 import { normalizePhoneNumber } from "@/lib/normalizePhone";
 import { loginSchema } from "@/lib/schemas/loginSchema";
-import { getUserByEmailOrPhone } from "@/models/userModel";
 import { userLogin } from "@/services/userService";
 import { LoginResponse } from "@/types/responses";
 import { cookies } from "next/headers";
@@ -29,7 +28,7 @@ export async function loginAction(
   }
 
   let { email_or_phone, password } = parsedData.data;
-  console.log("Parsed data:", parsedData.data);
+  // console.log("Parsed data:", parsedData.data);
 
   if (!email_or_phone.includes("@")) {
     const normalizedPhone = normalizePhoneNumber(email_or_phone);

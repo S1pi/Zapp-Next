@@ -1,0 +1,32 @@
+import { z } from "zod";
+
+export const UserSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  firstname: z
+    .string()
+    .trim()
+    .nonempty({ message: "Firstname is required" })
+    .regex(/^[a-zA-Z]+$/, {
+      message: "Firstname must contain only letters",
+    }),
+  lastname: z
+    .string()
+    .trim()
+    .nonempty({ message: "Lastname is required" })
+    .regex(/^[a-zA-Z]+$/, {
+      message: "Lastname must contain only letters",
+    }),
+  phone_number: z
+    .string()
+    .transform((value) => value.replace(/\s+/g, ""))
+    .refine((number) => /^(\+358|0)\d{7,10}$/.test(number), {
+      message: "Number must start with +358 or 0 and be 7-10 digits long",
+    }),
+  postnumber: z
+    .string()
+    .trim()
+    .regex(/^\d{5}$/, {
+      message: "postnumber must be 5 digits long, e.g. 00100",
+    }),
+  address: z.string().trim().nonempty({ message: "Address is required" }),
+});

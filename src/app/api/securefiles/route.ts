@@ -1,20 +1,9 @@
 import { requireRole } from "@/actions/authActions";
 import { readFile } from "@/lib/readFile";
-import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const userRole = req.headers.get("X-User-Role");
-
-  // console.log("Starting requireRole function...");
-
-  // if (!reqRole) {
-  //   return new NextResponse("Unauthorized", { status: 401 });
-  // }
-
-  // if (userRole !== "admin") {
-  //   return new NextResponse("Unauthorized", { status: 401 });
-  // }
 
   try {
     const params = req.nextUrl.searchParams;

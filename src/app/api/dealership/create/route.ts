@@ -2,21 +2,18 @@ import { DuplicateEntryError } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
 import { createDealership } from "@/services/dealershipService";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const DealershipSchema = z.object({
-  name: z.string().nonempty({ message: "Name is required" }).trim(),
-  address: z.string().nonempty({ message: "Address is required" }).trim(),
-});
+import { DealershipSchema } from "./schema";
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("X-User-Id");
   const userRole = req.headers.get("X-User-Role");
 
-
   if (userRole !== "admin" && userRole !== "dealer") {
     return NextResponse.json(
-      { error: "Unauthorized", message: "Only Admins and Dealers can create Dealerships" },
+      {
+        error: "Unauthorized",
+        message: "Only Admins and Dealers can create Dealerships",
+      },
       { status: 403 }
     );
   }
@@ -39,11 +36,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { name, address } = dealership.data;
+    const { name, address, registeration_number } = dealership.data;
 
     const createdDealership = await createDealership({
       name,
       address,
+      registeration_number,
       contact_id: Number(userId),
     });
 
