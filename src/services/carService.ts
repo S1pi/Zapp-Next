@@ -1,8 +1,11 @@
-import { NotFoundError } from "@/lib/customErrors";
+import { requireRole } from "@/actions/authActions";
+import { InvalidRoleError, NotFoundError } from "@/lib/customErrors";
 import { saveFile } from "@/lib/saveFile";
 import {
   insertCar,
   insertCarShowcase,
+  selectAllCarsAdmin,
+  selectAllCarsDealer,
   selectCarById,
   selectCarsByDealershipId,
 } from "@/models/carModel";
@@ -80,4 +83,22 @@ const getDealershipCars = async (dsId: number) => {
   }
 };
 
-export { addNewCar, getDealershipCars };
+const getCarsForAP = async (role: string, dealershipId: number) => {
+  try {
+    if (role === "admin") {
+      await requireRole("admin");
+      return await selectAllCarsAdmin();
+    }
+    if (role === "dealer") {
+      await requireRole(["dealer", "admin"]);
+      return await selectAllCarsDealer(dealershipId);
+    }
+  } catch (error) {
+    console.error("Error fetching cars:", error);
+    throw new Error("Failed to fetch cars");
+  }
+
+  throw new InvalidRoleError("Invalid user role");
+};
+
+export { addNewCar, getDealershipCars, getCarsForAP };

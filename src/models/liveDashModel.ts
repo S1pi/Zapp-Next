@@ -70,11 +70,11 @@ export async function findAdminLastWeekDashboardData(
   const sql = `SELECT 
                 SUM(r.price)AS total_revenue,
                 SUM(
-                  CASE WHEN c.dealership_id = 1 THEN r.price ELSE 0 END
+                  CASE WHEN c.dealership_id = ? THEN r.price ELSE 0 END
                 ) AS company_revenue,
                 ROUND(
                   AVG(
-                    CASE WHEN c.dealership_id = 1 THEN r.price ELSE NULL END
+                    CASE WHEN c.dealership_id = ? THEN r.price ELSE NULL END
                   ), 2
                 ) AS company_reservation_average_price,
                 ROUND(
@@ -82,7 +82,7 @@ export async function findAdminLastWeekDashboardData(
                 ) AS reservation_average_price,
                 COUNT(r.id) AS all_reservations_count,
                 COUNT(
-                  CASE WHEN c.dealership_id = 1 THEN r.id END
+                  CASE WHEN c.dealership_id = ? THEN r.id END
                 ) AS company_reservations_count
               FROM reservations r
               JOIN cars c ON r.car_id = c.id
@@ -125,7 +125,7 @@ export async function findDealerLastWeekDashboardData(
               FROM reservations r
               JOIN cars c ON r.car_id = c.id
               WHERE r.start_time >= NOW() - INTERVAL 7 DAY
-              AND c.dealership_id = 1
+              AND c.dealership_id = ?
               `;
 
   const params = [dealershipId];

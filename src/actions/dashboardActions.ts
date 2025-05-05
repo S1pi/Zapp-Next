@@ -1,6 +1,6 @@
 "use server";
 
-import { ActionResult } from "@/components/ui/Form";
+import { ActionResult } from "@/app/_components/ui/Form";
 import promisePool from "@/lib/db";
 import {
   DrivingLicenseValidationSchema,
@@ -15,6 +15,11 @@ import {
   getLiveDashboardData,
 } from "@/services/liveDashService";
 import { InvalidRoleError } from "@/lib/customErrors";
+import { getReservationsService } from "@/services/reservationService";
+import { ReservationReturnType } from "@/types/reservations";
+import { addNewCar, getCarsForAP } from "@/services/carService";
+import { newCarSchema } from "@/lib/schemas/newCarSchema";
+import { z } from "zod";
 
 export async function getAllUsers(): Promise<UserWithoutPassword[]> {
   // console.log("Fetching all users from the database...");
@@ -283,5 +288,128 @@ export async function getLastWeekData(): Promise<LastWeekDataNumbers> {
       throw new Error("Invalid user role");
     }
     throw err; // Rethrow the error to be handled by the caller
+  }
+}
+
+export async function getAllReservations(): Promise<ReservationReturnType[]> {
+  const session = await requireRole(["admin", "dealer"]);
+
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+
+  try {
+    const allReservations = await getReservationsService(
+      session.user.role,
+      dealershipId
+    );
+
+    if (!allReservations) {
+      throw new Error("No reservations found");
+    }
+
+    return allReservations;
+  } catch (error: any) {
+    if (error instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: error.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    console.error("Error fetching all reservations:", error);
+    throw error; // Rethrow the error to be handled by the caller
+  }
+}
+
+export async function getAllCars() {
+  const session = await requireRole(["admin", "dealer"]);
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+
+  try {
+    const allCars = await getCarsForAP(session.user.role, dealershipId);
+
+    if (!allCars) {
+      throw new Error("No cars found");
+    }
+    return allCars;
+  } catch (error: any) {
+    if (error instanceof InvalidRoleError) {
+      // One way to handle this is to log the error and return a specific message
+      // return {
+      //   success: false,
+      //   message: error.message,
+      // };
+      throw new Error("Invalid user role");
+    }
+    console.error("Error fetching all cars:", error);
+    throw error; // Rethrow the error to be handled by the caller
+  }
+}
+
+type NewCarValues = z.infer<typeof newCarSchema>;
+
+export async function createNewCar(
+  data: NewCarValues
+): Promise<ActionResult<NewCarValues>> {
+  const session = await requireRole(["admin", "dealer"]);
+  const userId = session.user.id; // Get the user ID from the session
+  const dealershipId = session.dealership?.id; // Get the dealership ID from the session
+
+  if (!dealershipId) {
+    throw new Error("Dealership ID not found in session");
+  }
+  if (!userId) {
+    throw new Error("User ID not found in session");
+  }
+
+  const parsedData = newCarSchema.safeParse(data);
+  if (!parsedData.success) {
+    const issue = parsedData.error.issues[0];
+    const field = issue.path[0] as keyof NewCarValues; // Get the field name from the error path
+
+    return {
+      success: false,
+      field,
+      message: issue.message,
+    };
+  }
+
+  const { car_img, ...carData } = parsedData.data; // Destructure the parsed data
+
+  const carInfo = {
+    ...carData,
+    dealership_id: dealershipId,
+  };
+
+  try {
+    const newCar = await addNewCar(userId, carInfo, car_img);
+
+    console.log("New car added:", newCar);
+
+    if (!newCar) {
+      throw new Error("Car could not be added");
+    }
+
+    return {
+      success: true,
+      message: "Car added successfully",
+      // resultData: newCar, // Include the new car data in the response this is optional
+    };
+  } catch (error: any) {
+    console.error("Error adding new car:", error);
+    if (error.code === "ER_NO_REFERENCED_ROW_2") {
+      throw new Error("Linked dealership not found");
+    }
+    return {
+      success: false,
+      message: "Car could not be added",
+    };
   }
 }

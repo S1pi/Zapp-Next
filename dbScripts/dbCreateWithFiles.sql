@@ -40,6 +40,7 @@ CREATE TABLE cars (
   dealership_id INT NOT NULL,
   brand VARCHAR(50) NOT NULL,
   model VARCHAR(50) NOT NULL,
+  color VARCHAR(50) NOT NULL,
   year INT NOT NULL,
   license_plate VARCHAR(50) NOT NULL,
   seats INT NOT NULL,

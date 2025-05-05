@@ -5,13 +5,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { FileSchema } from "@/lib/FileSchema";
 
-const CarSchema = z.object({
+export const CarSchema = z.object({
   dealership_id: z
     .number()
     .int()
     .positive({ message: "Dealership ID must be a positive integer" }),
   brand: z.string(),
   model: z.string(),
+  color: z.string().min(3, {
+    message: "Color must be at least 3 characters long",
+  }),
   year: z.number().min(1886).max(new Date().getFullYear(), {
     message: "Year must be between 1886 and the current year",
   }),

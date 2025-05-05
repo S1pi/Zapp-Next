@@ -1,5 +1,5 @@
 import { getUserSession } from "@/actions/authActions";
-import { SideBar } from "@/components/SideBar";
+import { SideBar } from "@/app/_components/SideBar";
 import { UserSessionProvider } from "@/contexts/userContext";
 import { redirect } from "next/navigation";
 
@@ -32,9 +32,9 @@ export default async function dashboardLayout({
 
   return (
     <UserSessionProvider initialSession={userSession}>
-      <div className="min-h-screen flex flex-col bg-background">
+      <div className="flex flex-col bg-background">
         {/* Main Content with Sidebar */}
-        <div className="flex flex-1">
+        <div className="flex flex-1 min-h-screen max-h-screen overflow-hidden">
           {/* Sidebar */}
           <SideBar />
 

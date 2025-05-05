@@ -1,8 +1,8 @@
 "use client";
-import { Form } from "@/components/ui/Form";
+import { Form } from "@/app/_components/ui/Form";
 import { TokenCreateSchema } from "@/lib/schemas/tokenCreateSchema";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
+import { Input } from "@/app/_components/ui/Input";
+import { Select } from "@/app/_components/ui/Select";
 import { use, useEffect } from "react";
 import { redirect } from "next/navigation";
 import { createInviteTokenAction } from "@/actions/tokenActions";

@@ -1,13 +1,13 @@
 "use client";
-import { CompanyInformation } from "@/components/registerPhases/CompanyInformation";
+import { CompanyInformation } from "@/app/_components/registerPhases/CompanyInformation";
 import {
   Confirmation,
   TokenValidationValues,
-} from "@/components/registerPhases/Confirmation";
-import { UserInformation } from "@/components/registerPhases/UserInformation";
+} from "@/app/_components/registerPhases/Confirmation";
+import { UserInformation } from "@/app/_components/registerPhases/UserInformation";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { useState } from "react";
-import { UserInformation2 } from "@/components/registerPhases/UserInformation2";
+import { UserInformation2 } from "@/app/_components/registerPhases/UserInformation2";
 import Link from "next/link";
 import { VerifyInviteActionResult } from "@/actions/tokenActions";
 import { submitRegisterAction } from "@/actions/registerActions";

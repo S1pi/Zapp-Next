@@ -1,6 +1,6 @@
 import { getUserSession } from "@/actions/authActions";
-import { CurrentStatus } from "@/components/live-dashboard/CurrentStatus";
-import { LastWeek } from "@/components/live-dashboard/LastWeek";
+import { CurrentStatus } from "@/app/_components/live-dashboard/CurrentStatus";
+import { LastWeek } from "@/app/_components/live-dashboard/LastWeek";
 
 export default async function LiveDashboard() {
   const userSession = await getUserSession();

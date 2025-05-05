@@ -1,17 +1,19 @@
 import dbConnection from "@/lib/db";
+import promisePool from "@/lib/db";
 import { NotFoundError } from "@/lib/customErrors";
-import { AddCarData, Car } from "@/types/cars";
+import { AddCarData, Car, CarReturnType, CarWithShowcase } from "@/types/cars";
 import { CarShowcaseUpload } from "@/types/files";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const insertCar = async (carInfo: AddCarData): Promise<number> => {
-  const sql = `INSERT INTO cars (dealership_id, brand, model, year, license_plate, seats) VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO cars (dealership_id, brand, model, year, color, license_plate, seats) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   const params = [
     carInfo.dealership_id,
     carInfo.brand,
     carInfo.model,
     carInfo.year,
+    carInfo.color,
     carInfo.license_plate,
     carInfo.seats,
   ];
@@ -76,6 +78,20 @@ const selectAllCars = async (): Promise<Car[]> => {
   return rows;
 };
 
+const selectAllCarsWithShowcase = async (): Promise<CarWithShowcase[]> => {
+  const sql = `SELECT c.*, f.file_url AS car_showcase_url FROM cars c LEFT JOIN files f ON c.id = f.related_id AND f.related_type = 'car' WHERE f.file_usage = 'car_showcase'`;
+
+  const [rows] = await dbConnection.query<RowDataPacket[] & CarWithShowcase[]>(
+    sql
+  );
+
+  if (rows.length === 0) {
+    throw new Error("No cars found");
+  }
+
+  return rows;
+};
+
 const selectCarsByDealershipId = async (dsId: number): Promise<Car[]> => {
   const sql = `SELECT * FROM cars WHERE dealership_id = ?`;
   const params = [dsId];
@@ -115,11 +131,63 @@ const updateCarStatus = async (
   }
 };
 
+const selectAllCarsAdmin = async (): Promise<CarReturnType[]> => {
+  const sql = `SELECT
+    c.id,
+    d.id AS dealership_id,
+    d.name AS dealership_name,
+    c.brand,
+    c.model,
+    c.year,
+    c.color,
+    c.license_plate,
+    c.seats,
+    c.is_reserved
+    FROM cars c
+    JOIN dealerships d ON c.dealership_id = d.id
+    ORDER BY d.id DESC`;
+
+  const [rows] = await promisePool.query<RowDataPacket[] & CarReturnType[]>(
+    sql
+  );
+
+  return rows;
+};
+const selectAllCarsDealer = async (
+  dealershipId: number
+): Promise<CarReturnType[]> => {
+  const sql = `SELECT
+    c.id,
+    d.id AS dealership_id,
+    d.name AS dealership_name,
+    c.brand,
+    c.model,
+    c.year,
+    c.color,
+    c.license_plate,
+    c.seats,
+    c.is_reserved
+    FROM cars c
+    JOIN dealerships d ON c.dealership_id = d.id
+    WHERE d.id = ?
+    ORDER BY d.id DESC`;
+
+  const [rows] = await promisePool.query<RowDataPacket[] & CarReturnType[]>(
+    sql,
+    [dealershipId]
+  );
+
+  return rows;
+};
+
 export {
   insertCar,
   selectCarById,
   selectAllCars,
+  selectAllCarsAdmin,
+  selectAllCarsDealer,
   selectCarsByDealershipId,
+  selectAllCarsWithShowcase,
   insertCarShowcase,
   updateCarLocation,
   updateCarStatus,

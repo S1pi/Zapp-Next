@@ -48,19 +48,25 @@ const adminCards = (data: AdminLastWeekData | null) => {
     },
     {
       title: "Kokonaisliikevaihto",
-      value: `${data.total_revenue} €`,
+      value: `${data.total_revenue ? data.total_revenue : "0"} €`,
     },
     {
       title: "Zapp-autojen liikevaihto",
-      value: `${data.company_revenue} €`,
+      value: `${data.company_revenue ? data.company_revenue : "0"} €`,
     },
     {
       title: "Kaikkien varauksien keskihinta",
-      value: `${data.reservation_average_price} €`,
+      value: `${
+        data.reservation_average_price ? data.reservation_average_price : "0"
+      } €`,
     },
     {
       title: "Zapp-autojen varauksien keskihinta",
-      value: `${data.company_reservation_average_price} €`,
+      value: `${
+        data.company_reservation_average_price
+          ? data.company_reservation_average_price
+          : "0"
+      } €`,
     },
   ];
 };
@@ -76,11 +82,15 @@ const dealerCards = (data: DealerLastWeekData | null) => {
     },
     {
       title: "Liikevaihto",
-      value: `${data.company_revenue} €`,
+      value: `${data.company_revenue ? data.company_revenue : "0"} €`,
     },
     {
       title: "Varauksen keskihinta",
-      value: `${data.company_reservation_average_price} €`,
+      value: `${
+        data.company_reservation_average_price
+          ? data.company_reservation_average_price
+          : "0"
+      } €`,
     },
   ];
 };
