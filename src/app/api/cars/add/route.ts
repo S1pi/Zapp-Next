@@ -2,29 +2,8 @@ import { NotFoundError } from "@/lib/customErrors";
 import formattedErrors from "@/lib/formattedErrors";
 import { addNewCar } from "@/services/carService";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { FileSchema } from "@/lib/FileSchema";
-
-export const CarSchema = z.object({
-  dealership_id: z
-    .number()
-    .int()
-    .positive({ message: "Dealership ID must be a positive integer" }),
-  brand: z.string(),
-  model: z.string(),
-  color: z.string().min(3, {
-    message: "Color must be at least 3 characters long",
-  }),
-  year: z.number().min(1886).max(new Date().getFullYear(), {
-    message: "Year must be between 1886 and the current year",
-  }),
-
-  license_plate: z.string().regex(/^[A-Z]{1,3}-\d{1,3}$/, {
-    message:
-      "License plate must be in the format 'AAA-123' with min 1 and max 3 uppercase letters and min 1 and max 3 digits",
-  }),
-  seats: z.number().int().min(1, { message: "Seats must be at least 1" }),
-});
+import { CarSchema } from "./schema";
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("X-User-Id");

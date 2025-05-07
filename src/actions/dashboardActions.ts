@@ -20,7 +20,6 @@ import { ReservationReturnType } from "@/types/reservations";
 import { addNewCar, getCarsForAP } from "@/services/carService";
 import { newCarSchema } from "@/lib/schemas/newCarSchema";
 import { z } from "zod";
-import { NewParkingZone } from "@/types/parking";
 import { newParkingZoneSchema } from "@/lib/schemas/parkingZoneSchema";
 import { addParkingZone } from "@/services/parkingService";
 

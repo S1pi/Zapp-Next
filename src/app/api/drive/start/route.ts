@@ -7,11 +7,7 @@ import {
 import { validateRequest } from "@/lib/middleware/validateRequest";
 import { driveStart } from "@/services/driveService";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const DriveSchema = z.object({
-  carId: z.number().min(1, { message: "carId is required" }),
-});
+import { DriveSchema } from "./schema";
 
 type DriveRequest = {
   carId: number;

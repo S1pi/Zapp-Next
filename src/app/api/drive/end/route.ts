@@ -1,22 +1,9 @@
-import {
-  DuplicateEntryError,
-  ForbiddenError,
-  MissingDataError,
-  NotFoundError,
-} from "@/lib/customErrors";
+import { MissingDataError } from "@/lib/customErrors";
 import { FileSchema } from "@/lib/FileSchema";
 import { errorToResponse } from "@/lib/middleware/errorToResponse";
 import { driveEnd } from "@/services/driveService";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const DriveSchema = z.object({
-  driveId: z.number().min(1, { message: "userId is required" }),
-  endLocation: z
-    .string()
-    .trim()
-    .nonempty({ message: "endLocation is required" }),
-});
+import { DriveSchema } from "./schema";
 
 export async function POST(req: NextRequest) {
   const userId = req.headers.get("X-User-Id");

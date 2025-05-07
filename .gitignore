@@ -46,3 +46,6 @@ next-env.d.ts
 /public/uploads/*
 /secure_uploads/licenses/*
 /secure_uploads/dropoff/*
+
+
+zapp-standalone.tar.gz

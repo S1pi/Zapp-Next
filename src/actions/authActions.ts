@@ -7,7 +7,7 @@ import { UserSessionData, UserSessionDataQuery } from "@/types/user";
 import { error } from "console";
 import { RowDataPacket } from "mysql2";
 import { cookies } from "next/headers";
-import { redirect, unauthorized } from "next/navigation";
+import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export async function getCurrentUser() {
@@ -18,7 +18,7 @@ export async function getCurrentUser() {
     return null;
   }
   try {
-    const { id, role, is_validated } = await verifyToken(token);
+    const { id } = await verifyToken(token);
 
     const user = await getUserById(id);
 

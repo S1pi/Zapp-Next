@@ -1,28 +1,10 @@
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-  ValidationError,
-} from "@/lib/customErrors";
-import formattedErrors from "@/lib/formattedErrors";
 import { errorToResponse } from "@/lib/middleware/errorToResponse";
 import { validateRequest } from "@/lib/middleware/validateRequest";
 import { userLogin } from "@/services/userService";
 import { LoginResponse } from "@/types/responses";
 import { LoginCredentials } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-
-const UserSchema = z.object({
-  email_or_phone: z
-    .string()
-    .nonempty({ message: "Email or phone number is required" })
-    .transform((value) => value.replace(/\s+/g, "")),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .max(32, { message: "Password must be at most 32 characters long" }),
-});
+import { UserSchema } from "./schema";
 
 const normalizePhoneNumber = (phone: string) => {
   const normalizedPhone = phone
